@@ -12,7 +12,8 @@ import {
   Menu,
   X,
   Bell,
-  Settings
+  Settings,
+  CircleAlert
 } from 'lucide-react';
 import { supabase } from './lib/supabase';
 
@@ -46,23 +47,14 @@ const App = () => {
   const startJourney = () => {
     setCurrentView(VIEWS.STANDARDS);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleAcceptStandards = () => {
-    setCurrentView(VIEWS.SELECTION);
-  };
-
-  const handleSelection = (avatar, room) => {
-    setUserProfile(avatar);
-    setSelectedRoom(room);
-    setCurrentView(VIEWS.CHAT);
+    setIsMenuOpen(false);
   };
 
   const navLinks = [
-    { name: 'Horarios', icon: <Clock size={18} />, action: startJourney },
-    { name: 'Comunidad', icon: <Users size={18} />, action: startJourney },
-    { name: 'Estaciones', icon: <MapPin size={18} />, action: startJourney },
-    { name: 'Incidencias', icon: <Bell size={18} />, action: startJourney },
+    { name: 'Horarios', icon: <Clock size={16} />, action: startJourney },
+    { name: 'Comunidad', icon: <Users size={16} />, action: startJourney },
+    { name: 'Estaciones', icon: <MapPin size={16} />, action: startJourney },
+    { name: 'Incidencias', icon: <Bell size={16} />, action: startJourney },
   ];
 
   if (currentView === VIEWS.CHAT) {
@@ -70,72 +62,103 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 selection:bg-renfe-red/30 overflow-x-hidden">
-      {/* Legal Disclaimer Bar */}
+    <div className="min-h-screen bg-zinc-950 selection:bg-renfe-red/30 overflow-x-hidden flex flex-col">
+      {/* Disclaimer Bar */}
       <div className="bg-orange-500/10 border-b border-orange-500/20 py-2 text-center text-[10px] sm:text-xs font-medium text-orange-200/80 z-[100] relative">
-        ⚠️ <span className="font-bold uppercase tracking-wider">Aviso:</span> Esta aplicación es meramente para entretenimiento y <span className="font-bold">no tiene ninguna vinculación oficial con Renfe Operadora</span>.
+        ⚠️ <span className="font-bold uppercase tracking-wider">Aviso:</span> Esta aplicación es meramente para entretenimiento y <span className="font-bold">no tiene vinculación oficial con Renfe</span>.
       </div>
 
       <AnimatePresence>
         {currentView === VIEWS.STANDARDS && (
           <StandardsScreen 
-            onAccept={handleAcceptStandards} 
+            onAccept={() => setCurrentView(VIEWS.SELECTION)} 
             onCancel={() => setCurrentView(VIEWS.LANDING)} 
           />
         )}
       </AnimatePresence>
 
       {/* Navigation */}
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'glass py-3' : 'bg-transparent py-5'}`}>
+      <nav className={`fixed top-[32px] sm:top-[36px] w-full z-50 transition-all duration-300 ${scrolled || isMenuOpen ? 'glass py-3' : 'bg-transparent py-5'}`}>
         <div className="container mx-auto px-6 flex justify-between items-center">
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-2 cursor-pointer"
+            className="flex items-center gap-2 cursor-pointer z-50"
             onClick={() => setCurrentView(VIEWS.LANDING)}
           >
             <div className="bg-renfe-red p-1.5 rounded-lg">
               <Train className="text-white" size={24} />
             </div>
             <div className="flex flex-col">
-              <span className="text-xl font-outfit font-bold tracking-tight leading-tight">
-                Tren<span className="text-renfe-red">Connect</span> <span className="text-tarragona-gold">TGN</span>
+              <span className="text-lg sm:text-xl font-outfit font-bold tracking-tight leading-none">
+                Tren<span className="text-renfe-red">Connect</span> <span className="text-tarragona-gold text-base sm:text-lg">TGN</span>
               </span>
-              <span className="text-[8px] uppercase tracking-[0.2em] text-zinc-500 font-bold -mt-0.5">App no oficial</span>
+              <span className="text-[8px] uppercase tracking-[0.2em] text-zinc-500 font-bold -mt-0.5 sm:mt-0">App no oficial</span>
             </div>
           </motion.div>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-6">
             {navLinks.map((link) => (
               <button 
                 key={link.name} 
                 onClick={link.action}
-                className="text-zinc-400 hover:text-white transition-colors flex items-center gap-2 text-sm font-medium"
+                className="text-zinc-400 hover:text-white transition-colors flex items-center gap-2 text-xs font-bold uppercase tracking-widest"
               >
-                {link.name}
+                {link.icon} {link.name}
               </button>
             ))}
             <button 
               onClick={startJourney}
-              className="bg-renfe-red hover:bg-red-700 text-white px-5 py-2 rounded-full text-sm font-semibold transition-all hover:scale-105 active:scale-95 shadow-lg shadow-renfe-red/20"
+              className="bg-renfe-red hover:bg-red-700 text-white px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-lg shadow-renfe-red/20"
             >
               Acceder
             </button>
           </div>
 
           {/* Mobile Toggle */}
-          <button className="md:hidden text-white" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? <X /> : <Menu />}
+          <button className="lg:hidden text-white z-50 p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
+
+        {/* Mobile Menu Overlay */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="lg:hidden bg-zinc-950/95 backdrop-blur-3xl border-b border-zinc-800 overflow-hidden"
+            >
+              <div className="container mx-auto px-8 py-10 space-y-6">
+                {navLinks.map((link) => (
+                  <button 
+                    key={link.name} 
+                    onClick={link.action}
+                    className="w-full flex items-center gap-4 text-xl font-bold text-zinc-300 hover:text-white"
+                  >
+                    <span className="p-3 bg-zinc-900 rounded-2xl">{link.icon}</span>
+                    {link.name}
+                  </button>
+                ))}
+                <button 
+                  onClick={startJourney}
+                  className="w-full bg-renfe-red text-white py-5 rounded-[2rem] font-black uppercase tracking-[0.2em]"
+                >
+                  Acceder al Chat
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
-      <main>
+      <main className="flex-1">
         {currentView === VIEWS.LANDING && (
-          <>
+          <div className="pt-20">
             {/* Hero Section */}
-            <section className="relative pt-32 pb-20 overflow-hidden">
+            <section className="relative pt-16 sm:pt-32 pb-20 overflow-hidden">
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-gradient-to-b from-renfe-red/10 to-transparent pointer-events-none" />
               <div className="container mx-auto px-6 relative z-10 text-center">
                 <motion.div
@@ -143,82 +166,74 @@ const App = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6 }}
                 >
-                  <span className="inline-block py-1 px-3 rounded-full bg-renfe-red/10 border border-renfe-red/20 text-renfe-red text-xs font-bold uppercase tracking-wider mb-6">
-                    Nueva plataforma digital
+                  <span className="inline-block py-1 px-4 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 text-[10px] font-black uppercase tracking-widest mb-8">
+                    Comunidad de Pasajeros de Tarragona
                   </span>
-                  <h1 className="text-5xl md:text-7xl font-outfit font-extrabold mb-6 leading-tight">
-                    Tu tren en <span className="text-transparent bg-clip-text bg-gradient-to-r from-renfe-red to-orange-500">Tarragona</span><br /> 
-                    más inteligente que nunca.
+                  <h1 className="text-5xl md:text-8xl font-outfit font-extrabold mb-8 leading-[1.1] tracking-tighter">
+                    Conecta con tu <span className="text-transparent bg-clip-text bg-gradient-to-br from-renfe-red via-orange-500 to-tarragona-gold">Tren</span><br /> 
+                    en tiempo real.
                   </h1>
-                  <p className="text-zinc-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 font-light">
-                    Conecta con otros viajeros, mantente informado sobre incidencias en tiempo real y recibe alertas personalizadas para tus rutas habituales.
+                  <p className="text-zinc-500 text-lg md:text-xl max-w-2xl mx-auto mb-12 font-medium">
+                    Únete al chat de los viajeros que están ahora mismo en tu línea. Informa, consulta o simplemente pasa el rato.
                   </p>
 
                   <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                     <button 
                       onClick={startJourney}
-                      className="w-full sm:w-auto bg-white text-zinc-950 px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-zinc-200 transition-all group shadow-xl"
+                      className="w-full sm:w-auto bg-renfe-red text-white px-10 py-5 rounded-[2rem] font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-red-700 transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-renfe-red/30"
                     >
                       Empezar ahora
-                      <ChevronRight className="group-hover:translate-x-1 transition-transform" />
+                      <ChevronRight size={20} />
                     </button>
                     <button 
                       onClick={startJourney}
-                      className="w-full sm:w-auto glass text-white px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-white/10 transition-all"
+                      className="w-full sm:w-auto glass hover:bg-white/10 text-white px-10 py-5 rounded-[2rem] font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all"
                     >
-                      Ver estado de la red
+                      Estado de la Red
                     </button>
                   </div>
                 </motion.div>
               </div>
             </section>
-
-            {/* Main Features Section Placeholder */}
-            <section className="py-20 bg-zinc-900/10">
-              <div className="container mx-auto px-6 text-center">
-                <div className="glass p-12 rounded-[3rem] border-zinc-800">
-                  <h2 className="text-3xl font-bold mb-6">La esencia es la Comunidad</h2>
-                  <p className="text-zinc-400 max-w-xl mx-auto mb-10">
-                    Nuestra app se basa en el chat en tiempo real entre pasajeros. Comparte información sobre tu tren, averías o simplemente saluda a tus compañeros de viaje.
-                  </p>
-                  <button 
-                    onClick={startJourney}
-                    className="bg-renfe-red text-white px-10 py-4 rounded-2xl font-bold shadow-lg hover:scale-105 transition-all"
-                  >
-                    Entrar al Chat del Tren
-                  </button>
-                </div>
-              </div>
+            
+            {/* Disclaimer and essence info */}
+            <section className="py-20">
+               <div className="container mx-auto px-6">
+                 <div className="bg-zinc-900/50 border border-zinc-800 p-8 sm:p-16 rounded-[4rem] text-center max-w-4xl mx-auto">
+                    <MessageSquare className="text-renfe-red mx-auto mb-6" size={48} />
+                    <h2 className="text-3xl sm:text-5xl font-outfit font-bold mb-6">La esencia es el Chat</h2>
+                    <p className="text-zinc-500 text-lg mb-10 font-medium">
+                      Esta no es una app oficial de horarios. Es un lugar de encuentro para los miles de personas que cogemos el tren en Tarragona a diario. ¡Nos vemos en el vagón!
+                    </p>
+                    <button onClick={startJourney} className="bg-white text-black px-12 py-5 rounded-[2rem] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all">
+                      Abrir Comunidad
+                    </button>
+                 </div>
+               </div>
             </section>
-          </>
+          </div>
         )}
 
         {currentView === VIEWS.SELECTION && (
-          <SelectionScreen onSelect={handleSelection} />
+          <SelectionScreen onSelect={(user, room) => { setUserProfile(user); setSelectedRoom(room); setCurrentView(VIEWS.CHAT); }} />
         )}
       </main>
 
       {/* Footer */}
-      <footer className="py-20 border-t border-zinc-900">
+      <footer className="py-20 border-t border-zinc-900 bg-black mt-auto">
         <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-start gap-12 text-zinc-500 text-center md:text-left">
-            <div className="max-w-xs mx-auto md:mx-0">
-              <div className="flex items-center gap-2 mb-6 justify-center md:justify-start">
-                <div className="bg-renfe-red p-1.5 rounded-lg">
-                  <Train className="text-white" size={24} />
-                </div>
-                <span className="text-white text-xl font-outfit font-bold tracking-tight">
-                  TrenConnect TGN
-                </span>
-              </div>
-              <p className="text-sm font-light leading-relaxed">
-                Plataforma independiente para mejorar la experiencia de viaje en Tarragona. Conectamos personas, no solo estaciones.
-              </p>
-            </div>
-            {/* Links and Copyright stuff */}
-          </div>
-          <div className="mt-10 pt-10 border-t border-zinc-900 text-center text-[10px] font-medium tracking-widest uppercase text-zinc-600">
-            &copy; 2026 TrenConnect Tarragona • App no oficial
+          <div className="flex flex-col md:flex-row justify-between items-center gap-8 text-zinc-600">
+             <div className="flex items-center gap-3 grayscale opacity-50">
+                <Train size={24} />
+                <span className="font-outfit font-bold text-xl uppercase tracking-widest">TrenConnect TGN</span>
+             </div>
+             <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-center">
+                &copy; 2026 TrenConnect Tarragona • <span className="text-renfe-red">App no oficial para entretenimiento</span>
+             </p>
+             <div className="flex gap-6">
+               <a href="#" className="hover:text-white transition-colors"><Settings size={20} /></a>
+               <a href="#" className="hover:text-white transition-colors"><Info size={20} /></a>
+             </div>
           </div>
         </div>
       </footer>
