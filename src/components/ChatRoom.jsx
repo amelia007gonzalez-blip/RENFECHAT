@@ -271,25 +271,25 @@ const ChatRoom = ({ user, room, onBack }) => {
       </AnimatePresence>
 
       {/* ── Input ── */}
-      <div className="px-4 pb-8 pt-3 bg-zinc-900 border-t border-zinc-800 shrink-0">
-        <form onSubmit={(e) => { e.preventDefault(); sendMessage(); }} className="flex items-center gap-2">
+      <div className="px-3 sm:px-5 pb-6 sm:pb-8 pt-3 bg-zinc-900 border-t border-zinc-800 shrink-0 w-full mb-safe">
+        <form onSubmit={(e) => { e.preventDefault(); sendMessage(); }} className="flex items-center gap-1.5 sm:gap-2 w-full max-w-full">
           <button type="button" onClick={() => setShowEmojis(!showEmojis)}
-            className={`p-3 rounded-2xl transition-all shrink-0 ${showEmojis ? 'bg-yellow-500/20 text-yellow-400' : 'text-zinc-500 hover:text-white'}`}>
+            className={`p-2.5 sm:p-3 rounded-2xl transition-all shrink-0 ${showEmojis ? 'bg-yellow-500/20 text-yellow-400' : 'text-zinc-500 hover:text-white'}`}>
             <Smile size={22} />
           </button>
           <input
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Escribe algo en el tren..."
-            className="flex-1 bg-zinc-950 border border-zinc-800 text-white px-5 py-4 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 font-medium text-sm"
+            placeholder="Escribe algo..."
+            className="flex-1 min-w-0 bg-zinc-950 border border-zinc-800 text-white px-4 py-3 sm:py-4 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 font-medium text-sm"
           />
           <button type="button" onClick={handleNudge} title="Zumbido"
-            className="p-3 bg-orange-500/20 text-orange-400 rounded-2xl hover:bg-orange-500/30 transition-all shrink-0 active:scale-90">
+            className="p-2.5 sm:p-3 bg-orange-500/20 text-orange-400 rounded-2xl hover:bg-orange-500/30 transition-all shrink-0 active:scale-90">
             <Zap size={20} />
           </button>
           <button type="submit" disabled={!newMessage.trim()}
-            className="p-3 bg-blue-600 text-white rounded-2xl hover:bg-blue-500 disabled:opacity-30 transition-all shrink-0 active:scale-90">
+            className="p-2.5 sm:p-3 bg-blue-600 text-white rounded-2xl hover:bg-blue-500 disabled:opacity-30 transition-all shrink-0 active:scale-90">
             <Send size={20} />
           </button>
         </form>
