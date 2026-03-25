@@ -13,10 +13,25 @@ const stations = [
   { name: 'M80 Radio', url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/M80RADIO.mp3' },
 ];
 
+// Seed messages — only shown when localStorage is empty (first time / no real users yet)
 const INITIAL_MESSAGES = [
-  { id: 1, user_name: 'Marcos', user_avatar: 'https://api.dicebear.com/9.x/avataaars-neutral/svg?seed=Felix&backgroundColor=b6e3f4', text: '¿El de Barcelona va con retraso?', created_at: new Date(Date.now() - 1000 * 60 * 12).toISOString() },
-  { id: 2, user_name: 'Sara', user_avatar: 'https://api.dicebear.com/9.x/avataaars-neutral/svg?seed=Aneka&backgroundColor=c0aede', text: 'Sí, unos 10 min por un problema en vía 4. 😤', created_at: new Date(Date.now() - 1000 * 60 * 10).toISOString() },
-  { id: 3, user_name: 'Javi', user_avatar: 'https://api.dicebear.com/9.x/avataaars-neutral/svg?seed=Javi&backgroundColor=d1d4f9', text: '¡Buenos días! Hoy el vagón 3 está bastante lleno 🚆', created_at: new Date(Date.now() - 1000 * 60 * 5).toISOString() },
+  { id: 1, user_name: 'Rosa', user_avatar: 'https://api.dicebear.com/9.x/avataaars-neutral/svg?seed=Rosa&backgroundColor=ffd5dc', text: 'Buenas noches, ¿alguien sabe si mañana salen a horario los primeros servicios? 🌙', created_at: new Date(Date.now() - 1000 * 60 * 18).toISOString() },
+  { id: 2, user_name: 'Ivan', user_avatar: 'https://api.dicebear.com/9.x/avataaars-neutral/svg?seed=Ivan&backgroundColor=c0aede', text: 'Por lo general sí, salvo los martes que suele ir cargado el primer tren de las 5:51. 😅', created_at: new Date(Date.now() - 1000 * 60 * 14).toISOString() },
+  { id: 3, user_name: 'Laia', user_avatar: 'https://api.dicebear.com/9.x/avataaars-neutral/svg?seed=Laia&backgroundColor=d1d4f9', text: 'El vagón 2 siempre huele a café a estas horas, alguien lleva termo 😂🚆', created_at: new Date(Date.now() - 1000 * 60 * 6).toISOString() },
+];
+
+// Scrolling curiosity ticker items about Tarragona trains
+const TICKER_ITEMS = [
+  '🚽 En el tren de las 7:21 de Tarragona, una vez se agotaron todos los rollos de papel de baño antes de llegar a Sants.',
+  '🎸 Un pasajero tocó la guitarra entera en el trayecto TGN→BCN. Nadie se quejó.',
+  '📦 En 2019 se olvidaron 47 paraguas en un solo mes en los trenes de cercanías de Tarragona.',
+  '🐾 El record de animales en un mismo vagón: 3 perros, 2 gatos y un loro (Valencia era destino).',
+  '🌅 El tren de las 6:21 es el más silencioso: la mayoría de pasajeros duerme de pie.',
+  '📱 Media de tiempo mirando el móvil por trayecto TGN-BCN: 58 minutos de 75.',
+  '🥐 La cafetería de Tarragona vende más croissants antes de las 7:00 que en todo el resto del día.',
+  '😴 Se han encontrado gafas de sol, libros, portátiles y hasta una mochila con ropa limpia abandonada en los asientos.',
+  '⚡ El primer tren Tarragona-Barcelona tardaba más de 3 horas en 1865. Hoy: 75 minutos.',
+  '🎟️ En 2023, las líneas Tarragona-Barcelona tuvieron más de 2 millones de viajeros.',
 ];
 
 const ChatRoom = ({ user, room, onBack }) => {
@@ -29,16 +44,27 @@ const ChatRoom = ({ user, room, onBack }) => {
   const audioRef = useRef(null);
   const scrollRef = useRef(null);
 
-  // Load persisted messages from localStorage
+  // Load persisted messages — seed messages only appear if no real chat exists yet
   const storageKey = `${STORAGE_KEY}_${room.id}`;
   const [messages, setMessages] = useState(() => {
     try {
       const saved = localStorage.getItem(storageKey);
-      return saved ? JSON.parse(saved) : INITIAL_MESSAGES;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return parsed.length > 0 ? parsed : INITIAL_MESSAGES;
+      }
+      return INITIAL_MESSAGES;
     } catch {
       return INITIAL_MESSAGES;
     }
   });
+
+  // Scrolling ticker index
+  const [tickerIdx, setTickerIdx] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setTickerIdx(i => (i + 1) % TICKER_ITEMS.length), 8000);
+    return () => clearInterval(t);
+  }, []);
 
   // Auto-scroll on new messages
   useEffect(() => {
@@ -131,6 +157,23 @@ const ChatRoom = ({ user, room, onBack }) => {
           {user?.img && <img src={user.img} className="w-9 h-9 rounded-xl bg-zinc-800 border-2 border-blue-500/30" alt="Me" />}
         </div>
       </header>
+
+      {/* ── Curiosity Ticker ── */}
+      <div className="bg-zinc-900/80 border-b border-zinc-800/60 px-5 py-2 flex items-center gap-3 shrink-0 overflow-hidden">
+        <span className="text-[9px] font-black uppercase tracking-widest text-renfe-red shrink-0 border border-renfe-red/30 bg-renfe-red/10 px-2 py-0.5 rounded-full">🚆 Dato</span>
+        <AnimatePresence mode="wait">
+          <motion.p
+            key={tickerIdx}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.4 }}
+            className="text-[11px] text-zinc-400 font-medium truncate"
+          >
+            {TICKER_ITEMS[tickerIdx]}
+          </motion.p>
+        </AnimatePresence>
+      </div>
 
       {/* ── Radio Player ── */}
       <AnimatePresence>
