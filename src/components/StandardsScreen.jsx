@@ -100,7 +100,10 @@ const StandardsScreen = ({ onAccept, onCancel }) => {
             Aceptar y Continuar
           </button>
 
-          <div className="text-center">
+          <div className="text-center space-y-2">
+            <p className="text-[9px] text-zinc-600 font-medium px-4">
+              Esta plataforma es independiente. Al continuar, aceptas que el contenido es generado por usuarios y no representa a ninguna entidad oficial.
+            </p>
             <a href="#" className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest hover:text-zinc-400 transition-colors flex items-center justify-center gap-1">
               Contrato de Licencia
               <X size={8} />

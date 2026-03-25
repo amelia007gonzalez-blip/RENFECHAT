@@ -71,6 +71,11 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-zinc-950 selection:bg-renfe-red/30 overflow-x-hidden">
+      {/* Legal Disclaimer Bar */}
+      <div className="bg-orange-500/10 border-b border-orange-500/20 py-2 text-center text-[10px] sm:text-xs font-medium text-orange-200/80 z-[100] relative">
+        ⚠️ <span className="font-bold uppercase tracking-wider">Aviso:</span> Esta aplicación es meramente para entretenimiento y <span className="font-bold">no tiene ninguna vinculación oficial con Renfe Operadora</span>.
+      </div>
+
       <AnimatePresence>
         {currentView === VIEWS.STANDARDS && (
           <StandardsScreen 
@@ -92,9 +97,12 @@ const App = () => {
             <div className="bg-renfe-red p-1.5 rounded-lg">
               <Train className="text-white" size={24} />
             </div>
-            <span className="text-xl font-outfit font-bold tracking-tight">
-              Renfe<span className="text-renfe-red">Connect</span> <span className="text-tarragona-gold">Tarragona</span>
-            </span>
+            <div className="flex flex-col">
+              <span className="text-xl font-outfit font-bold tracking-tight leading-tight">
+                Tren<span className="text-renfe-red">Connect</span> <span className="text-tarragona-gold">TGN</span>
+              </span>
+              <span className="text-[8px] uppercase tracking-[0.2em] text-zinc-500 font-bold -mt-0.5">App no oficial</span>
+            </div>
           </motion.div>
 
           {/* Desktop Nav */}
@@ -200,7 +208,7 @@ const App = () => {
                   <Train className="text-white" size={24} />
                 </div>
                 <span className="text-white text-xl font-outfit font-bold tracking-tight">
-                  RenfeConnect
+                  TrenConnect TGN
                 </span>
               </div>
               <p className="text-sm font-light leading-relaxed">
@@ -210,7 +218,7 @@ const App = () => {
             {/* Links and Copyright stuff */}
           </div>
           <div className="mt-10 pt-10 border-t border-zinc-900 text-center text-[10px] font-medium tracking-widest uppercase text-zinc-600">
-            &copy; 2026 Renfe Connect Tarragona
+            &copy; 2026 TrenConnect Tarragona • App no oficial
           </div>
         </div>
       </footer>
