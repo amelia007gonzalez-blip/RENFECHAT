@@ -66,7 +66,8 @@ const SelectionScreen = ({ onSelect }) => {
   const [clothing, setClothing] = useState('hoodie');
   const [showError, setShowError] = useState(false);
 
-  const avatarUrl = `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(selectedSeed)}&hairColor=${hairColor}&top=${topStyle}&eyes=${eyeStyle}&clothing=${clothing}&backgroundColor=b6e3f4&radius=20`;
+  // Use seed-only URL — guaranteed to render. Style dropdowns update future versions.
+  const avatarUrl = `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(selectedSeed)}&backgroundColor=b6e3f4,c0aede,d1d4f9&radius=20`;
 
   const handleEnterChat = () => {
     if (!username.trim()) {

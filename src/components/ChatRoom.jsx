@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, User, Info, ArrowLeft, MessageSquare, MapPin, Smile, Zap } from 'lucide-react';
+import { Send, ArrowLeft, Train, Smile, Zap } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 const emojis = ['😊', '😂', '🔥', '🚀', '🚆', '⏰', '⚠️', '👍', '❤️', '🙌'];
