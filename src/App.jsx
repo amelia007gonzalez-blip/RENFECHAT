@@ -5,7 +5,6 @@ import {
   MapPin, 
   Users, 
   Clock, 
-  ShieldCheck, 
   ChevronRight, 
   MessageSquare, 
   Info,
@@ -13,7 +12,7 @@ import {
   X,
   Bell,
   Settings,
-  CircleAlert
+  AlertCircle
 } from 'lucide-react';
 import { supabase } from './lib/supabase';
 
@@ -62,10 +61,10 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 selection:bg-renfe-red/30 overflow-x-hidden flex flex-col">
-      {/* Disclaimer Bar */}
-      <div className="bg-orange-500/10 border-b border-orange-500/20 py-2 text-center text-[10px] sm:text-xs font-medium text-orange-200/80 z-[100] relative">
-        ⚠️ <span className="font-bold uppercase tracking-wider">Aviso:</span> Esta aplicación es meramente para entretenimiento y <span className="font-bold">no tiene vinculación oficial con Renfe</span>.
+    <div className="min-h-screen bg-zinc-950 selection:bg-renfe-red/30 overflow-x-hidden flex flex-col relative">
+      {/* Disclaimer Bar - Fixed at top */}
+      <div className="fixed top-0 w-full bg-orange-500/10 backdrop-blur-md border-b border-orange-500/20 py-2 sm:py-2.5 text-center text-[9px] sm:text-xs font-semibold text-orange-200/90 z-[110]">
+        ⚠️ <span className="uppercase tracking-widest px-1">Aviso:</span> App para entretenimiento. <span className="hidden sm:inline">No tiene vinculación oficial con Renfe</span>.
       </div>
 
       <AnimatePresence>
@@ -77,8 +76,8 @@ const App = () => {
         )}
       </AnimatePresence>
 
-      {/* Navigation */}
-      <nav className={`fixed top-[32px] sm:top-[36px] w-full z-50 transition-all duration-300 ${scrolled || isMenuOpen ? 'glass py-3' : 'bg-transparent py-5'}`}>
+      {/* Navigation - Fixed below Disclaimer */}
+      <nav className={`fixed top-[28px] sm:top-[36px] w-full z-[100] transition-all duration-300 ${scrolled || isMenuOpen ? 'glass border-b border-white/5 py-2 sm:py-3' : 'bg-transparent py-4 sm:py-6'}`}>
         <div className="container mx-auto px-6 flex justify-between items-center">
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
@@ -154,9 +153,9 @@ const App = () => {
         </AnimatePresence>
       </nav>
 
-      <main className="flex-1">
+      <main className="flex-1 w-full relative">
         {currentView === VIEWS.LANDING && (
-          <div className="pt-20">
+          <div className="pt-24 sm:pt-32">
             {/* Hero Section */}
             <section className="relative pt-16 sm:pt-32 pb-20 overflow-hidden">
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-gradient-to-b from-renfe-red/10 to-transparent pointer-events-none" />

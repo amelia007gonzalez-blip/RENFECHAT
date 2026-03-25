@@ -46,7 +46,7 @@ const SelectionScreen = ({ onSelect }) => {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-20 container mx-auto px-6 max-w-4xl">
+    <div className="min-h-screen pt-32 sm:pt-40 pb-20 container mx-auto px-6 max-w-4xl relative z-10">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
         
         {/* Left Side: Avatar Customizer */}
@@ -55,9 +55,11 @@ const SelectionScreen = ({ onSelect }) => {
           animate={{ opacity: 1, x: 0 }}
           className="space-y-8"
         >
-          <div className="text-left">
-            <h2 className="text-4xl font-outfit font-bold mb-2">Personaliza tu Perfil</h2>
-            <p className="text-zinc-500 mb-8 italic">Como si fuera un avatar de ROBLOX, ¡dale tu toque!</p>
+          <div className="text-left space-y-2">
+            <h2 className="text-4xl sm:text-5xl font-outfit font-black tracking-tighter mb-2 leading-none">
+              Tu <span className="text-renfe-red">Avatar</span>
+            </h2>
+            <p className="text-zinc-600 font-bold uppercase tracking-widest text-[9px] sm:text-[10px]">Estilo Roblox • Personaliza tu piel y ropa</p>
           </div>
 
           <div className="flex flex-col items-center glass p-8 rounded-[3rem] border-zinc-800">
@@ -119,10 +121,10 @@ const SelectionScreen = ({ onSelect }) => {
               <button
                 key={room.id}
                 onClick={() => setSelectedRoom(room)}
-                className={`w-full p-5 rounded-3xl flex items-center justify-between transition-all border ${
+                className={`w-full p-4 sm:p-5 rounded-[2rem] flex items-center justify-between transition-all border ${
                   selectedRoom.id === room.id 
-                    ? 'bg-blue-600 border-blue-500 text-white shadow-xl scale-[1.02]' 
-                    : 'glass border-zinc-800 text-zinc-400 hover:bg-white/5'
+                    ? 'bg-blue-600 border-blue-400 text-white shadow-2xl scale-[1.02] z-10' 
+                    : 'bg-zinc-900/50 border-zinc-800 text-zinc-400 hover:bg-zinc-800/80'
                 }`}
               >
                 <div className="flex items-center gap-4">
@@ -153,7 +155,7 @@ const SelectionScreen = ({ onSelect }) => {
             Entrar al Chat
             <ChevronRight className="group-hover:translate-x-1 transition-transform" />
           </button>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
