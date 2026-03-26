@@ -63,7 +63,8 @@ const ChatRoom = ({ user, room, onBack }) => {
         return;
       }
       
-      if (active && data && data.length > 0) {
+      if (active && data) {
+        // If data is empty array [], it will clear the fake messages, which is correct!
         setMessages(data);
       }
     };

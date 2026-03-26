@@ -61,10 +61,12 @@ function buildUrl(seed, top, hairColor, eyes, clothing, accessories, bg) {
     hairColor,
     eyes,
     clothing,
-    accessories,
     backgroundColor: bg,
     radius: '20'
   });
+  if (accessories && accessories !== 'blank') {
+    params.append('accessories', accessories);
+  }
   return `https://api.dicebear.com/9.x/avataaars/svg?${params.toString()}`;
 }
 
@@ -148,7 +150,7 @@ const SelectionScreen = ({ onSelect }) => {
                     }`}
                   >
                     <img
-                      src={`https://api.dicebear.com/9.x/avataaars-neutral/svg?seed=${seed}&backgroundColor=b6e3f4`}
+                      src={`https://api.dicebear.com/9.x/avataaars/svg?seed=${seed}&backgroundColor=b6e3f4`}
                       alt={seed}
                       className="w-full h-full"
                       loading="lazy"
