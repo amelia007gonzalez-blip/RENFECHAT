@@ -62,7 +62,8 @@ function buildUrl(seed, top, hairColor, eyes, clothing, accessories, bg) {
     eyes,
     clothing,
     backgroundColor: bg,
-    radius: '20'
+    radius: '20',
+    v: '1.1'
   });
   if (accessories && accessories !== 'blank') {
     params.append('accessories', accessories);
@@ -150,7 +151,7 @@ const SelectionScreen = ({ onSelect }) => {
                     }`}
                   >
                     <img
-                      src={`https://api.dicebear.com/9.x/avataaars/svg?seed=${seed}&backgroundColor=b6e3f4`}
+                      src={`https://api.dicebear.com/9.x/avataaars/svg?seed=${seed}&backgroundColor=b6e3f4&v=1.1`}
                       alt={seed}
                       className="w-full h-full"
                       loading="lazy"
