@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Train, MapPin, Users, Clock, ChevronRight, MessageSquare, Menu, X, Bell } from 'lucide-react';
+import { Train, MapPin, Users, Clock, ChevronRight, MessageSquare, Menu, X, Bell, Radio } from 'lucide-react';
 import { Analytics } from '@vercel/analytics/react';
 
 import StandardsScreen from './components/StandardsScreen';
@@ -152,7 +152,7 @@ const App = () => { // State Management with sessionStorage persistence to survi
                     <br />en tiempo real.
                   </h1>
                   <p className="text-zinc-500 text-lg md:text-xl max-w-2xl mx-auto mb-12">
-                    Únete al chat de los viajeros que están ahora mismo en tu línea. Informa, consulta o simplemente pasa el rato.
+                    Únete al chat de los viajeros que están ahora mismo en tu línea. Informa, consulta o pasa el rato escuchando nuestras radios en vivo.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <button onClick={startChat}
@@ -170,18 +170,20 @@ const App = () => { // State Management with sessionStorage persistence to survi
 
             {/* Quick action cards */}
             <section className="py-16 container mx-auto px-6">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
                 {[
                   { icon: <Clock size={28} />, label: 'Horarios', sub: 'TGN ↔ BCN', action: () => go(VIEWS.HORARIOS), color: 'blue' },
                   { icon: <Bell size={28} />, label: 'Incidencias', sub: 'Estado de la red', action: () => go(VIEWS.INCIDENCIAS), color: 'orange' },
                   { icon: <MapPin size={28} />, label: 'Estaciones', sub: 'Líneas y servicios', action: () => go(VIEWS.ESTACIONES), color: 'green' },
+                  { icon: <Radio size={28} className="animate-pulse" />, label: 'Radio en vivo', sub: 'Escucha mientras chateas', action: startChat, color: 'red' },
                 ].map(c => (
                   <button key={c.label} onClick={c.action}
                     className="glass border-zinc-800 rounded-[2rem] p-8 text-left hover:bg-white/5 transition-all hover:scale-[1.02] active:scale-[0.98] group">
                     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${
                       c.color === 'blue' ? 'bg-blue-500/20 text-blue-400' :
                       c.color === 'orange' ? 'bg-orange-500/20 text-orange-400' :
-                      'bg-green-500/20 text-green-400'
+                      c.color === 'green' ? 'bg-green-500/20 text-green-400' :
+                      'bg-red-500/20 text-renfe-red'
                     }`}>{c.icon}</div>
                     <h3 className="font-black text-lg mb-1">{c.label}</h3>
                     <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest">{c.sub}</p>
