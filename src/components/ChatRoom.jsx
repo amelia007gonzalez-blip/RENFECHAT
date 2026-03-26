@@ -41,23 +41,56 @@ const ChatRoom = ({ user, room, onBack }) => {
   const [showRadio, setShowRadio] = useState(false);
   const [radioStation, setRadioStation] = useState(stations[0]);
   const [radioPlaying, setRadioPlaying] = useState(false);
+  const [messages, setMessages] = useState(INITIAL_MESSAGES);
   const audioRef = useRef(null);
   const scrollRef = useRef(null);
 
-  // Load persisted messages — seed messages only appear if no real chat exists yet
-  const storageKey = `${STORAGE_KEY}_${room.id}`;
-  const [messages, setMessages] = useState(() => {
-    try {
-      const saved = localStorage.getItem(storageKey);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return parsed.length > 0 ? parsed : INITIAL_MESSAGES;
+  // Load history & subscribe to real-time changes
+  useEffect(() => {
+    let active = true;
+
+    const fetchMessages = async () => {
+      const { data, error } = await supabase
+        .from('messages')
+        .select('*')
+        .eq('room_id', room.id)
+        .order('created_at', { ascending: true })
+        .limit(100);
+
+      if (error) {
+        console.warn("Table might not exist yet:", error.message);
+        return;
       }
-      return INITIAL_MESSAGES;
-    } catch {
-      return INITIAL_MESSAGES;
-    }
-  });
+      
+      if (active && data && data.length > 0) {
+        setMessages(data);
+      }
+    };
+
+    fetchMessages();
+
+    const channel = supabase
+      .channel(`room_${room.id}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `room_id=eq.${room.id}` }, (payload) => {
+        if (active) {
+          setMessages(prev => {
+            if (prev.find(m => m.id === payload.new.id)) return prev;
+            return [...prev, payload.new];
+          });
+          // Play zumbido animation if it's a remote system message
+          if (payload.new.is_system && payload.new.user_name === 'SISTEMA') {
+            setNudge(true);
+            setTimeout(() => setNudge(false), 500);
+          }
+        }
+      })
+      .subscribe();
+
+    return () => {
+      active = false;
+      supabase.removeChannel(channel);
+    };
+  }, [room.id]);
 
   // Scrolling ticker index
   const [tickerIdx, setTickerIdx] = useState(0);
@@ -71,13 +104,6 @@ const ChatRoom = ({ user, room, onBack }) => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages]);
 
-  // Persist messages to localStorage whenever they change
-  useEffect(() => {
-    try {
-      localStorage.setItem(storageKey, JSON.stringify(messages));
-    } catch { /* ignore storage errors */ }
-  }, [messages, storageKey]);
-
   // Radio playback
   useEffect(() => {
     if (!audioRef.current) return;
@@ -89,32 +115,41 @@ const ChatRoom = ({ user, room, onBack }) => {
     }
   }, [radioPlaying, radioStation]);
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (!newMessage.trim()) return;
+    const text = newMessage.trim();
+    setNewMessage('');
+    setShowEmojis(false);
+
     const msg = {
-      id: Date.now(),
+      id: crypto.randomUUID(),
       room_id: room.id,
       user_name: user?.name || 'Invitado',
       user_avatar: user?.img || '',
-      text: newMessage.trim(),
+      text: text,
+      is_system: false,
       created_at: new Date().toISOString(),
     };
+    
     setMessages(prev => [...prev, msg]);
-    setNewMessage('');
-    setShowEmojis(false);
+    await supabase.from('messages').insert([msg]);
   };
 
-  const handleNudge = () => {
+  const handleNudge = async () => {
     setNudge(true);
     const msg = {
-      id: Date.now(),
+      id: crypto.randomUUID(),
+      room_id: room.id,
       user_name: 'SISTEMA',
       user_avatar: '',
       text: `⚡ ¡${user?.name || 'Alguien'} ha enviado un ZUMBIDO!`,
-      isSystem: true,
+      is_system: true,
       created_at: new Date().toISOString(),
     };
+    
     setMessages(prev => [...prev, msg]);
+    await supabase.from('messages').insert([msg]);
+    
     setTimeout(() => setNudge(false), 500);
   };
 
@@ -219,7 +254,7 @@ const ChatRoom = ({ user, room, onBack }) => {
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 scrollbar-hide">
         {messages.map((msg) => {
           const isMe = msg.user_name === (user?.name);
-          if (msg.isSystem) {
+          if (msg.is_system || msg.isSystem) {
             return (
               <motion.div key={msg.id} initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex justify-center">
                 <span className="text-[10px] bg-blue-500/10 text-blue-400 px-4 py-1.5 rounded-full border border-blue-500/20 font-black uppercase tracking-widest">

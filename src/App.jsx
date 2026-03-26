@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Train, MapPin, Users, Clock, ChevronRight, MessageSquare, Info, Menu, X, Bell, Settings, AlertCircle } from 'lucide-react';
+import { Train, MapPin, Users, Clock, ChevronRight, MessageSquare, Menu, X, Bell } from 'lucide-react';
+import { Analytics } from '@vercel/analytics/react';
 
 import StandardsScreen from './components/StandardsScreen';
 import SelectionScreen from './components/SelectionScreen';
@@ -217,6 +218,7 @@ const App = () => {
         </div>
       </footer>
 
+      <Analytics />
     </div>
   );
 };
