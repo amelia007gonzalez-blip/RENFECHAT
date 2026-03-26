@@ -18,12 +18,23 @@ const VIEWS = {
   ESTACIONES: 'ESTACIONES',
 };
 
-const App = () => {
-  const [view, setView] = useState(VIEWS.LANDING);
+const App = () => { // State Management with sessionStorage persistence to survive F5 reloads
+  const [view, setView] = useState(() => sessionStorage.getItem('trenconnect_view') || VIEWS.LANDING);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [userProfile, setUserProfile] = useState(null);
-  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [userProfile, setUserProfile] = useState(() => {
+    const saved = sessionStorage.getItem('trenconnect_user');
+    return saved && saved !== "undefined" ? JSON.parse(saved) : null;
+  });
+  const [selectedRoom, setSelectedRoom] = useState(() => {
+    const saved = sessionStorage.getItem('trenconnect_room');
+    return saved && saved !== "undefined" ? JSON.parse(saved) : null;
+  });
+
+  // Sync state to sessionStorage
+  useEffect(() => { sessionStorage.setItem('trenconnect_view', view); }, [view]);
+  useEffect(() => { sessionStorage.setItem('trenconnect_room', JSON.stringify(selectedRoom)); }, [selectedRoom]);
+  useEffect(() => { sessionStorage.setItem('trenconnect_user', JSON.stringify(userProfile)); }, [userProfile]);
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 50);

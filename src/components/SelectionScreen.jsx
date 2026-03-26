@@ -14,12 +14,12 @@ const avatarSeeds = ['Felix','Aneka','Zara','Leo','Mia','Javi','Sara','Marc','Lu
 
 // Options with Spanish labels AND DiceBear-compatible values for 'avataaars' (not neutral)
 const topOptions = [
-  { value: 'shortHairShortFlat', label: 'Corto Liso' },
-  { value: 'shortHairShortCurly', label: 'Corto Rizado' },
-  { value: 'longHairStraight', label: 'Largo Liso' },
-  { value: 'longHairCurly', label: 'Largo Rizado' },
-  { value: 'winterHat01', label: 'Gorro Invierno' },
-  { value: 'hijab', label: 'Hijab' }
+  { value: 'shortHair', label: 'Pelo corto' },
+  { value: 'longHair', label: 'Pelo largo' },
+  { value: 'hat', label: 'Gorra' },
+  { value: 'winterHat1', label: 'Invernal' },
+  { value: 'hijab', label: 'Hijab' },
+  { value: 'turban', label: 'Turbante' }
 ];
 const eyeOptions = [
   { value: 'default', label: 'Normal' },
@@ -73,7 +73,7 @@ function buildUrl(seed, top, hairColor, eyes, clothing, accessories, bg) {
 const SelectionScreen = ({ onSelect }) => {
   const [username, setUsername] = useState('');
   const [selectedSeed, setSelectedSeed] = useState('Felix');
-  const [top, setTop] = useState('shortHairShortFlat');
+  const [top, setTop] = useState('shortHair');
   const [hairColor, setHairColor] = useState('brown');
   const [eyes, setEyes] = useState('default');
   const [clothing, setClothing] = useState('hoodie');
