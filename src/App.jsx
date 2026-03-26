@@ -220,7 +220,7 @@ const App = () => { // State Management with sessionStorage persistence to survi
             <span className="font-outfit font-bold text-lg uppercase tracking-widest">TrenConnect TGN</span>
           </div>
           <p className="text-[10px] font-bold uppercase tracking-widest text-center">
-            © 2026 TrenConnect Tarragona · <span className="text-renfe-red">App no oficial v1.1</span>
+            © 2026 TrenConnect Tarragona · <span className="text-renfe-red">App no oficial v1.2</span>
           </p>
           <div className="flex gap-5">
             <button onClick={() => go(VIEWS.HORARIOS)} className="hover:text-white transition-colors text-xs font-bold uppercase tracking-widest">Horarios</button>

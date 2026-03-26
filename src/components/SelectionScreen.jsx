@@ -14,12 +14,12 @@ const avatarSeeds = ['Felix','Aneka','Zara','Leo','Mia','Javi','Sara','Marc','Lu
 
 // Options with Spanish labels AND DiceBear-compatible values for 'avataaars' (not neutral)
 const topOptions = [
-  { value: 'shortHair', label: 'Pelo corto' },
-  { value: 'longHair', label: 'Pelo largo' },
-  { value: 'hat', label: 'Gorra' },
+  { value: 'shortFlat', label: 'Pelo corto' },
+  { value: 'straight01', label: 'Pelo largo' },
+  { value: 'theCaesar', label: 'Flequillo' },
   { value: 'winterHat1', label: 'Invernal' },
   { value: 'hijab', label: 'Hijab' },
-  { value: 'turban', label: 'Turbante' }
+  { value: 'curly', label: 'Rizado' }
 ];
 const eyeOptions = [
   { value: 'default', label: 'Normal' },
@@ -37,12 +37,12 @@ const clothingOptions = [
   { value: 'blazerAndSweater', label: 'Jersey 2' }
 ];
 const hairColorOptions = [
-  { value: 'black', label: 'Negro' },
-  { value: 'blonde', label: 'Rubio' },
-  { value: 'brown', label: 'Castaño' },
-  { value: 'pastelPink', label: 'Rosa' },
-  { value: 'platinum', label: 'Platino' },
-  { value: 'red', label: 'Pelirrojo' }
+  { value: '2c1b18', label: 'Negro' },
+  { value: 'b58143', label: 'Rubio' },
+  { value: '724133', label: 'Castaño' },
+  { value: 'f59797', label: 'Rosa' },
+  { value: 'd6b370', label: 'Platino' },
+  { value: 'c93305', label: 'Pelirrojo' }
 ];
 const accessoriesOptions = [
   { value: 'blank', label: 'Ninguno' },
@@ -63,7 +63,7 @@ function buildUrl(seed, top, hairColor, eyes, clothing, accessories, bg) {
     clothing,
     backgroundColor: bg,
     radius: '20',
-    v: '1.1'
+    v: '1.2'
   });
   if (accessories && accessories !== 'blank') {
     params.append('accessories', accessories);
@@ -74,8 +74,8 @@ function buildUrl(seed, top, hairColor, eyes, clothing, accessories, bg) {
 const SelectionScreen = ({ onSelect }) => {
   const [username, setUsername] = useState('');
   const [selectedSeed, setSelectedSeed] = useState('Felix');
-  const [top, setTop] = useState('shortHair');
-  const [hairColor, setHairColor] = useState('brown');
+  const [top, setTop] = useState('shortFlat');
+  const [hairColor, setHairColor] = useState('724133');
   const [eyes, setEyes] = useState('default');
   const [clothing, setClothing] = useState('hoodie');
   const [accessories, setAccessories] = useState('blank');
@@ -151,7 +151,7 @@ const SelectionScreen = ({ onSelect }) => {
                     }`}
                   >
                     <img
-                      src={`https://api.dicebear.com/9.x/avataaars/svg?seed=${seed}&backgroundColor=b6e3f4&v=1.1`}
+                      src={`https://api.dicebear.com/9.x/avataaars/svg?seed=${seed}&backgroundColor=b6e3f4&v=1.2`}
                       alt={seed}
                       className="w-full h-full"
                       loading="lazy"
