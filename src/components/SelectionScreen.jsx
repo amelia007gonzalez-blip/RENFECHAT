@@ -12,65 +12,75 @@ const chatRooms = [
 
 const avatarSeeds = ['Felix','Aneka','Zara','Leo','Mia','Javi','Sara','Marc','Luna','Alex','Rosa','Ivan','Noa','Pau','Laia','Bernat'];
 
-// Options with Spanish labels AND DiceBear-compatible values
+// Options with Spanish labels AND DiceBear-compatible values for 'avataaars' (not neutral)
 const topOptions = [
-  { value: 'longHair', label: 'Pelo largo' },
-  { value: 'shortHair', label: 'Pelo corto' },
-  { value: 'eyepatch', label: 'Parche' },
-  { value: 'hat', label: 'Gorra' },
-  { value: 'hijab', label: 'Hijab' },
+  { value: 'shortHairShortFlat', label: 'Corto Liso' },
+  { value: 'shortHairShortCurly', label: 'Corto Rizado' },
+  { value: 'longHairStraight', label: 'Largo Liso' },
+  { value: 'longHairCurly', label: 'Largo Rizado' },
+  { value: 'winterHat01', label: 'Gorro Invierno' },
+  { value: 'hijab', label: 'Hijab' }
 ];
 const eyeOptions = [
   { value: 'default', label: 'Normal' },
   { value: 'happy', label: 'Feliz' },
-  { value: 'surprised', label: 'Sorprendido' },
+  { value: 'surprised', label: 'Sorpresa' },
   { value: 'wink', label: 'Guiño' },
-  { value: 'hearts', label: 'Corazones' },
+  { value: 'hearts', label: 'Corazones' }
 ];
 const clothingOptions = [
-  { value: 'blazerShirt', label: 'Americana' },
+  { value: 'blazerAndShirt', label: 'Traje' },
   { value: 'hoodie', label: 'Sudadera' },
-  { value: 'overall', label: 'Mono' },
+  { value: 'overall', label: 'Peto/Mono' },
   { value: 'shirtCrewNeck', label: 'Camiseta' },
-  { value: 'sweater', label: 'Jersey' },
+  { value: 'collarAndSweater', label: 'Jersey 1' },
+  { value: 'blazerAndSweater', label: 'Jersey 2' }
 ];
 const hairColorOptions = [
-  { value: 'auburn', label: 'Castaño rojizo' },
   { value: 'black', label: 'Negro' },
   { value: 'blonde', label: 'Rubio' },
   { value: 'brown', label: 'Castaño' },
-  { value: 'pastelPink', label: 'Rosa pastel' },
-  { value: 'blue01', label: 'Azul' },
+  { value: 'pastelPink', label: 'Rosa' },
+  { value: 'platinum', label: 'Platino' },
+  { value: 'red', label: 'Pelirrojo' }
+];
+const accessoriesOptions = [
+  { value: 'blank', label: 'Ninguno' },
+  { value: 'kurt', label: 'Gafas Pasta' },
+  { value: 'prescription02', label: 'Gafas Leer' },
+  { value: 'round', label: 'Gafas Redondas' },
+  { value: 'sunglasses', label: 'Gafas Sol' }
 ];
 const bgColors = ['b6e3f4', 'c0aede', 'd1d4f9', 'ffd5dc', 'ffdfbf'];
 
 // Build a DiceBear 9.x avataaars URL with style parameters
-function buildUrl(seed, top, hairColor, eyes, clothing, bg) {
-  // Combine all selections into a unique deterministic URL
+function buildUrl(seed, top, hairColor, eyes, clothing, accessories, bg) {
   const params = new URLSearchParams({
     seed,
     top,
     hairColor,
     eyes,
     clothing,
+    accessories,
     backgroundColor: bg,
-    radius: '20',
+    radius: '20'
   });
-  return `https://api.dicebear.com/9.x/avataaars-neutral/svg?${params.toString()}`;
+  return `https://api.dicebear.com/9.x/avataaars/svg?${params.toString()}`;
 }
 
 const SelectionScreen = ({ onSelect }) => {
   const [username, setUsername] = useState('');
   const [selectedSeed, setSelectedSeed] = useState('Felix');
-  const [top, setTop] = useState('shortHair');
+  const [top, setTop] = useState('shortHairShortFlat');
   const [hairColor, setHairColor] = useState('brown');
   const [eyes, setEyes] = useState('default');
   const [clothing, setClothing] = useState('hoodie');
+  const [accessories, setAccessories] = useState('blank');
   const [bg, setBg] = useState(bgColors[0]);
   const [selectedRoom, setSelectedRoom] = useState(chatRooms[0]);
   const [showError, setShowError] = useState(false);
 
-  const avatarUrl = buildUrl(selectedSeed, top, hairColor, eyes, clothing, bg);
+  const avatarUrl = buildUrl(selectedSeed, top, hairColor, eyes, clothing, accessories, bg);
 
   const handleEnterChat = () => {
     if (!username.trim()) {
@@ -88,6 +98,7 @@ const SelectionScreen = ({ onSelect }) => {
     setHairColor(rand(hairColorOptions).value);
     setEyes(rand(eyeOptions).value);
     setClothing(rand(clothingOptions).value);
+    setAccessories(rand(accessoriesOptions).value);
     setBg(rand(bgColors));
   };
 
@@ -170,13 +181,14 @@ const SelectionScreen = ({ onSelect }) => {
               </AnimatePresence>
             </div>
 
-            {/* Style dropdowns (Spanish, affect avatar) */}
-            <div className="w-full grid grid-cols-2 gap-3">
+            {/* Style dropdowns */}
+            <div className="w-full grid grid-cols-2 lg:grid-cols-3 gap-3">
               {[
                 { label: 'Pelo', value: top, setter: setTop, options: topOptions },
-                { label: 'Ojos', value: eyes, setter: setEyes, options: eyeOptions },
+                { label: 'Color', value: hairColor, setter: setHairColor, options: hairColorOptions },
                 { label: 'Ropa', value: clothing, setter: setClothing, options: clothingOptions },
-                { label: 'Color de pelo', value: hairColor, setter: setHairColor, options: hairColorOptions },
+                { label: 'Ojos', value: eyes, setter: setEyes, options: eyeOptions },
+                { label: 'Gafas', value: accessories, setter: setAccessories, options: accessoriesOptions },
               ].map(({ label, value, setter, options }) => (
                 <div key={label}>
                   <label className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-1.5 block">{label}</label>

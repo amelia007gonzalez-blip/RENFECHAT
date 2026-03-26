@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, ArrowLeft, Train, Smile, Zap, Radio } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 const STORAGE_KEY = 'trenconnect_messages';
 const emojis = ['😊','😂','🔥','🚀','🚆','⏰','⚠️','👍','❤️','🙌','😴','😤','🎉','💪','✌️','🫶'];
