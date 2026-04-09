@@ -63,9 +63,10 @@ const ChatRoom = ({ user, room, onBack }) => {
         return;
       }
       
-      if (active && data) {
-        // If data is empty array [], it will clear the fake messages, which is correct!
-        setMessages(data);
+      if (active) {
+        // Keep the initial seed messages and append real ones safely to prevent array spread crash
+        const safeData = Array.isArray(data) ? data : [];
+        setMessages([...INITIAL_MESSAGES, ...safeData]);
       }
     };
 
@@ -105,6 +106,20 @@ const ChatRoom = ({ user, room, onBack }) => {
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages]);
+
+  // Global Presence Tracker
+  useEffect(() => {
+    const presenceChannel = supabase.channel('renfe_presence');
+    presenceChannel.subscribe(async (status) => {
+      if (status === 'SUBSCRIBED') {
+        await presenceChannel.track({ room_id: room.id, user: user?.name });
+      }
+    });
+    return () => {
+      presenceChannel.unsubscribe();
+      supabase.removeChannel(presenceChannel);
+    };
+  }, [room.id, user?.name]);
 
   // Radio playback
   useEffect(() => {

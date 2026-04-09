@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '../lib/supabase';
 import { Train, ChevronRight, Check, RotateCcw, AlertCircle } from 'lucide-react';
 
 const chatRooms = [
@@ -82,6 +83,29 @@ const SelectionScreen = ({ onSelect }) => {
   const [bg, setBg] = useState(bgColors[0]);
   const [selectedRoom, setSelectedRoom] = useState(chatRooms[0]);
   const [showError, setShowError] = useState(false);
+  const [onlineCounts, setOnlineCounts] = useState({});
+
+  useEffect(() => {
+    const presenceChannel = supabase.channel('renfe_presence');
+    presenceChannel
+      .on('presence', { event: 'sync' }, () => {
+        const state = presenceChannel.presenceState();
+        const counts = {};
+        for (const key in state) {
+          state[key].forEach(p => {
+            if (p.room_id) {
+              counts[p.room_id] = (counts[p.room_id] || 0) + 1;
+            }
+          });
+        }
+        setOnlineCounts(counts);
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(presenceChannel);
+    };
+  }, []);
 
   const avatarUrl = buildUrl(selectedSeed, top, hairColor, eyes, clothing, accessories, bg);
 
@@ -243,8 +267,14 @@ const SelectionScreen = ({ onSelect }) => {
                   </div>
                   <div className="text-left">
                     <div className={`font-bold text-sm ${selectedRoom.id === room.id ? 'text-white' : 'text-zinc-100'}`}>{room.name}</div>
-                    <div className={`text-[10px] uppercase font-bold tracking-wider ${selectedRoom.id === room.id ? 'text-blue-100' : 'text-zinc-600'}`}>
-                      {room.desc}
+                    <div className={`text-[10px] uppercase font-bold tracking-wider flex items-center gap-2 mt-0.5 ${selectedRoom.id === room.id ? 'text-blue-100' : 'text-zinc-600'}`}>
+                      <span>{room.desc}</span>
+                      {onlineCounts[room.id] > 0 && (
+                        <span className="flex items-center gap-1 bg-green-500/10 text-green-400 px-1.5 py-0.5 rounded-md border border-green-500/20 shadow-sm shadow-green-500/10">
+                          <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                          {onlineCounts[room.id]} activos
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
