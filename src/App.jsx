@@ -6,7 +6,8 @@ import { Analytics } from '@vercel/analytics/react';
 import StandardsScreen from './components/StandardsScreen';
 import SelectionScreen from './components/SelectionScreen';
 import ChatRoom from './components/ChatRoom';
-import { HorariosPage, IncidenciasPage, EstacionesPage } from './components/InfoPages';
+import { HorariosPage, EstacionesPage } from './components/InfoPages';
+import { IncidentsPage } from './components/IncidentsPage';
 
 const VIEWS = {
   LANDING:    'LANDING',
@@ -30,11 +31,13 @@ const App = () => { // State Management with sessionStorage persistence to survi
     const saved = sessionStorage.getItem('trenconnect_room');
     return saved && saved !== "undefined" ? JSON.parse(saved) : null;
   });
+  const [zone, setZone] = useState(() => sessionStorage.getItem('trenconnect_zone') || null);
 
   // Sync state to sessionStorage
   useEffect(() => { sessionStorage.setItem('trenconnect_view', view); }, [view]);
   useEffect(() => { sessionStorage.setItem('trenconnect_room', JSON.stringify(selectedRoom)); }, [selectedRoom]);
   useEffect(() => { sessionStorage.setItem('trenconnect_user', JSON.stringify(userProfile)); }, [userProfile]);
+  useEffect(() => { if (zone) sessionStorage.setItem('trenconnect_zone', zone); }, [zone]);
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 50);
@@ -47,11 +50,11 @@ const App = () => { // State Management with sessionStorage persistence to survi
 
   // ── Pages that take over the full screen ──
   if (view === VIEWS.CHAT)
-    return <ChatRoom user={userProfile} room={selectedRoom} onBack={() => go(VIEWS.SELECTION)} />;
+    return <ChatRoom user={userProfile} room={selectedRoom} zone={zone} onBack={() => go(VIEWS.SELECTION)} />;
   if (view === VIEWS.HORARIOS)
     return <HorariosPage onBack={() => go(VIEWS.LANDING)} />;
   if (view === VIEWS.INCIDENCIAS)
-    return <IncidenciasPage onBack={() => go(VIEWS.LANDING)} />;
+    return <IncidentsPage user={userProfile} onBack={() => go(VIEWS.LANDING)} />;
   if (view === VIEWS.ESTACIONES)
     return <EstacionesPage onBack={() => go(VIEWS.LANDING)} />;
 
@@ -210,7 +213,7 @@ const App = () => { // State Management with sessionStorage persistence to survi
         )}
 
         {view === VIEWS.SELECTION && (
-          <SelectionScreen onSelect={(u, r) => { setUserProfile(u); setSelectedRoom(r); go(VIEWS.CHAT); }} />
+          <SelectionScreen onSelect={(u, r, z) => { setUserProfile(u); setSelectedRoom(r); setZone(z); go(VIEWS.CHAT); }} />
         )}
       </main>
 

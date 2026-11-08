@@ -2,14 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { Train, ChevronRight, Check, RotateCcw, AlertCircle } from 'lucide-react';
-
-const chatRooms = [
-  { id: 'TGN-BCN', name: 'Tarragona → Barcelona', desc: 'Línea de alta frecuencia (Diarios)' },
-  { id: 'BCN-TGN', name: 'Barcelona → Tarragona', desc: 'Regreso desde Sants / Passeig de Gràcia' },
-  { id: 'R16', name: 'Línea R16', desc: 'Tortosa / Ulldecona' },
-  { id: 'RT1', name: 'Línea RT1', desc: 'Tarragona – Reus' },
-  { id: 'RT2', name: 'Línea RT2', desc: "Salou – L'Arboç" },
-];
+import { CHAT_ROUTES, ZONES } from '../lib/chatConfig';
 
 const avatarSeeds = ['Felix','Aneka','Zara','Leo','Mia','Javi','Sara','Marc','Luna','Alex','Rosa','Ivan','Noa','Pau','Laia','Bernat'];
 
@@ -81,7 +74,8 @@ const SelectionScreen = ({ onSelect }) => {
   const [clothing, setClothing] = useState('hoodie');
   const [accessories, setAccessories] = useState('blank');
   const [bg, setBg] = useState(bgColors[0]);
-  const [selectedRoom, setSelectedRoom] = useState(chatRooms[0]);
+  const [selectedRoom, setSelectedRoom] = useState(CHAT_ROUTES[0]);
+  const [zone, setZone] = useState(ZONES[0]);
   const [showError, setShowError] = useState(false);
   const [onlineCounts, setOnlineCounts] = useState({});
 
@@ -115,7 +109,7 @@ const SelectionScreen = ({ onSelect }) => {
       setTimeout(() => setShowError(false), 3000);
       return;
     }
-    onSelect({ name: username.trim(), img: avatarUrl, seed: selectedSeed }, selectedRoom);
+    onSelect({ name: username.trim(), img: avatarUrl, seed: selectedSeed }, selectedRoom, zone);
   };
 
   const randomize = () => {
@@ -208,6 +202,19 @@ const SelectionScreen = ({ onSelect }) => {
               </AnimatePresence>
             </div>
 
+            {/* Zone selector */}
+            <div className="w-full">
+              <label htmlFor="zone-select" className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-2 block">¿De qué zona eres?</label>
+              <select
+                id="zone-select"
+                value={zone}
+                onChange={(e) => setZone(e.target.value)}
+                className="w-full bg-zinc-950 border border-zinc-800 p-4 rounded-2xl text-white outline-none focus:ring-2 focus:ring-blue-500/50 font-bold text-sm cursor-pointer"
+              >
+                {ZONES.map(z => <option key={z} value={z}>{z}</option>)}
+              </select>
+            </div>
+
             {/* Style dropdowns */}
             <div className="w-full grid grid-cols-2 lg:grid-cols-3 gap-3">
               {[
@@ -253,7 +260,7 @@ const SelectionScreen = ({ onSelect }) => {
           </div>
 
           <div className="space-y-3">
-            {chatRooms.map((room) => (
+            {CHAT_ROUTES.map((room) => (
               <button key={room.id} onClick={() => setSelectedRoom(room)}
                 className={`w-full p-4 sm:p-5 rounded-[1.75rem] flex items-center justify-between transition-all border ${
                   selectedRoom.id === room.id

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Clock, ArrowLeft, Train, AlertTriangle, MapPin, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Train, AlertTriangle, MapPin, ExternalLink } from 'lucide-react';
 
 // ─── HORARIOS ────────────────────────────────────────────────────────
 
@@ -80,55 +80,6 @@ export function HorariosPage({ onBack }) {
           <p className="text-xs text-zinc-400 leading-relaxed">
             Horarios orientativos. Consulta <a href="https://www.renfe.com/es/es/cercanias/cercanias-barcelona/horarios" target="_blank" rel="noopener noreferrer" className="text-blue-400 underline font-bold">renfe.com <ExternalLink size={10} className="inline" /></a> para horarios oficiales actualizados.
           </p>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-// ─── INCIDENCIAS ─────────────────────────────────────────────────────
-
-const incidents = [
-  { id: 1, severity: 'high', line: 'TGN→BCN', title: 'Retraso en vía 4', detail: 'Avería técnica en el ramal de acceso a Tarragona. Retraso estimado de 15 minutos en todos los servicios.', time: 'hace 10 min' },
-  { id: 2, severity: 'medium', line: 'RT1', title: 'Obras y cortes de vía', detail: 'Obras de mantenimiento en el tramo Tarragona-Reus. Servicios alternativos de bus habilitados hasta las 22:00.', time: 'hace 1 h' },
-  { id: 3, severity: 'low', line: 'R16', title: 'Vagón con aire acondicionado averiado', detail: 'El vagón 5 del servicio de las 14:21 hacia Tortosa tiene el aire acondicionado fuera de servicio.', time: 'hace 3 h' },
-];
-
-const severityStyle = { high: 'bg-red-500/10 border-red-500/30 text-red-400', medium: 'bg-orange-500/10 border-orange-500/30 text-orange-400', low: 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400' };
-const severityLabel = { high: 'Crítico', medium: 'Aviso', low: 'Info' };
-
-export function IncidenciasPage({ onBack }) {
-  return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-zinc-950 pt-28 sm:pt-36 pb-20">
-      <div className="container mx-auto px-4 sm:px-6 max-w-3xl">
-        <div className="flex items-center gap-3 mb-8">
-          <button onClick={onBack} className="p-2 hover:bg-white/5 rounded-xl text-zinc-400"><ArrowLeft size={20} /></button>
-          <div>
-            <h1 className="text-3xl font-outfit font-black">Incidencias <span className="text-orange-400">en Red</span></h1>
-            <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mt-1">Estado de la red · Reportes comunidad</p>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          {incidents.map(inc => (
-            <div key={inc.id} className={`border rounded-2xl p-5 ${severityStyle[inc.severity]}`}>
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-black uppercase tracking-widest opacity-70">{inc.line}</span>
-                  <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border ${severityStyle[inc.severity]}`}>
-                    {severityLabel[inc.severity]}
-                  </span>
-                </div>
-                <span className="text-[10px] opacity-50 font-bold">{inc.time}</span>
-              </div>
-              <h3 className="font-bold text-white text-sm mb-1">{inc.title}</h3>
-              <p className="text-xs opacity-70 leading-relaxed">{inc.detail}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-6 text-center">
-          <p className="text-zinc-600 text-xs font-bold uppercase tracking-widest">Las incidencias son reportadas por la comunidad</p>
         </div>
       </div>
     </motion.div>
