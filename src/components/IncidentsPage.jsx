@@ -26,13 +26,13 @@ const timeAgo = (iso) => {
 
 const emptyForm = { userName: '', line: CHAT_ROUTES[0].id, zone: ZONES[0], severity: 'medium', description: '' };
 
-export function IncidentsPage({ onBack, user }) {
+export function IncidentsPage({ onBack, sessionUser, onLogin }) {
   const [incidents, setIncidents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ ...emptyForm, userName: user?.name || '' });
+  const [form, setForm] = useState({ ...emptyForm, userName: sessionUser?.user_metadata?.alias || '' });
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(false);
 
@@ -120,9 +120,9 @@ export function IncidentsPage({ onBack, user }) {
               <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mt-1">Reportes de los viajeros en tiempo real</p>
             </div>
           </div>
-          <button onClick={() => setShowForm(s => !s)}
+          <button onClick={() => (sessionUser ? setShowForm(s => !s) : onLogin())}
             className="shrink-0 bg-orange-500 hover:bg-orange-400 text-black px-4 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all active:scale-95">
-            {showForm ? 'Cerrar' : 'Reportar'}
+            {!sessionUser ? 'Entrar para reportar' : showForm ? 'Cerrar' : 'Reportar'}
           </button>
         </div>
 

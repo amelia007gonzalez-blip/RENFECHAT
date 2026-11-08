@@ -65,8 +65,8 @@ function buildUrl(seed, top, hairColor, eyes, clothing, accessories, bg) {
   return `https://api.dicebear.com/9.x/avataaars/svg?${params.toString()}`;
 }
 
-const SelectionScreen = ({ onSelect }) => {
-  const [username, setUsername] = useState('');
+const SelectionScreen = ({ sessionUser, onSelect }) => {
+  const [username, setUsername] = useState(sessionUser?.user_metadata?.alias || '');
   const [selectedSeed, setSelectedSeed] = useState('Felix');
   const [top, setTop] = useState('shortFlat');
   const [hairColor, setHairColor] = useState('724133');
@@ -109,7 +109,7 @@ const SelectionScreen = ({ onSelect }) => {
       setTimeout(() => setShowError(false), 3000);
       return;
     }
-    onSelect({ name: username.trim(), img: avatarUrl, seed: selectedSeed }, selectedRoom, zone);
+    onSelect({ id: sessionUser.id, name: username.trim(), img: avatarUrl, seed: selectedSeed }, selectedRoom, zone);
   };
 
   const randomize = () => {

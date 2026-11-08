@@ -6,11 +6,14 @@ import { Analytics } from '@vercel/analytics/react';
 import StandardsScreen from './components/StandardsScreen';
 import SelectionScreen from './components/SelectionScreen';
 import ChatRoom from './components/ChatRoom';
+import AuthScreen from './components/AuthScreen';
 import { HorariosPage, EstacionesPage } from './components/InfoPages';
 import { IncidentsPage } from './components/IncidentsPage';
+import { useSession } from './lib/auth';
 
 const VIEWS = {
   LANDING:    'LANDING',
+  AUTH:       'AUTH',
   STANDARDS:  'STANDARDS',
   SELECTION:  'SELECTION',
   CHAT:       'CHAT',
@@ -21,6 +24,8 @@ const VIEWS = {
 
 const App = () => { // State Management with sessionStorage persistence to survive F5 reloads
   const [view, setView] = useState(() => sessionStorage.getItem('trenconnect_view') || VIEWS.LANDING);
+  const { session, ready } = useSession();
+  const sessionUser = session?.user ?? null;
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [userProfile, setUserProfile] = useState(() => {
@@ -46,15 +51,20 @@ const App = () => { // State Management with sessionStorage persistence to survi
   }, []);
 
   const go = (v) => { setView(v); setMenuOpen(false); window.scrollTo({ top: 0 }); };
-  const startChat = () => go(VIEWS.STANDARDS);
+  const startChat = () => go(sessionUser ? VIEWS.STANDARDS : VIEWS.AUTH);
 
   // ── Pages that take over the full screen ──
+  if (view === VIEWS.AUTH)
+    return <AuthScreen onAuthenticated={() => go(VIEWS.STANDARDS)} onBack={() => go(VIEWS.LANDING)} />;
+  if (ready && !sessionUser && (view === VIEWS.CHAT || view === VIEWS.SELECTION))
+    return <AuthScreen onAuthenticated={() => go(VIEWS.STANDARDS)} onBack={() => go(VIEWS.LANDING)} />;
   if (view === VIEWS.CHAT)
-    return <ChatRoom user={userProfile} room={selectedRoom} zone={zone} onBack={() => go(VIEWS.SELECTION)} />;
+    return <ChatRoom user={userProfile} room={selectedRoom} zone={zone} onBack={() => go(VIEWS.SELECTION)}
+      onSignOut={() => { setUserProfile(null); setZone(null); go(VIEWS.LANDING); }} />;
   if (view === VIEWS.HORARIOS)
     return <HorariosPage onBack={() => go(VIEWS.LANDING)} />;
   if (view === VIEWS.INCIDENCIAS)
-    return <IncidentsPage user={userProfile} onBack={() => go(VIEWS.LANDING)} />;
+    return <IncidentsPage sessionUser={sessionUser} onLogin={() => go(VIEWS.AUTH)} onBack={() => go(VIEWS.LANDING)} />;
   if (view === VIEWS.ESTACIONES)
     return <EstacionesPage onBack={() => go(VIEWS.LANDING)} />;
 
@@ -213,7 +223,7 @@ const App = () => { // State Management with sessionStorage persistence to survi
         )}
 
         {view === VIEWS.SELECTION && (
-          <SelectionScreen onSelect={(u, r, z) => { setUserProfile(u); setSelectedRoom(r); setZone(z); go(VIEWS.CHAT); }} />
+          <SelectionScreen sessionUser={sessionUser} onSelect={(u, r, z) => { setUserProfile(u); setSelectedRoom(r); setZone(z); go(VIEWS.CHAT); }} />
         )}
       </main>
 

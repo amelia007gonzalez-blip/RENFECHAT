@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, ArrowLeft, Train, Smile, Radio, AlertCircle, RotateCw } from 'lucide-react';
+import { Send, ArrowLeft, Train, Smile, Radio, AlertCircle, RotateCw, LogOut, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { signOutUser } from '../lib/auth';
 
 const MESSAGE_LIMIT = 500;
 const emojis = ['😊','😂','🔥','🚀','🚆','⏰','⚠️','👍','❤️','🙌','😴','😤','🎉','💪','✌️','🫶'];
@@ -14,7 +15,9 @@ const stations = [
   { name: 'M80 Radio', url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/M80RADIO.mp3' },
 ];
 
-const ChatRoom = ({ user, room, zone, onBack }) => {
+const MESSAGE_COLUMNS = 'id, room_id, zone, user_id, user_name, user_avatar, text, created_at';
+
+const ChatRoom = ({ user, room, zone, onBack, onSignOut }) => {
   const [newMessage, setNewMessage] = useState('');
   const [showEmojis, setShowEmojis] = useState(false);
   const [showRadio, setShowRadio] = useState(false);
@@ -25,6 +28,8 @@ const ChatRoom = ({ user, room, zone, onBack }) => {
   const [loadError, setLoadError] = useState(false);
   const [sendError, setSendError] = useState(false);
   const [sending, setSending] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+  const [deleteError, setDeleteError] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const audioRef = useRef(null);
   const scrollRef = useRef(null);
@@ -41,7 +46,7 @@ const ChatRoom = ({ user, room, zone, onBack }) => {
     const fetchMessages = async () => {
       const { data, error } = await supabase
         .from('messages')
-        .select('id, room_id, zone, user_name, user_avatar, text, created_at')
+        .select(MESSAGE_COLUMNS)
         .eq('room_id', room.id)
         .order('created_at', { ascending: true })
         .limit(200);
@@ -61,6 +66,9 @@ const ChatRoom = ({ user, room, zone, onBack }) => {
       .channel(`messages-${room.id}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `room_id=eq.${room.id}` }, (payload) => {
         if (active && payload.new) addMessage(payload.new);
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'messages' }, (payload) => {
+        if (active && payload.old?.id) setMessages(prev => prev.filter(m => m.id !== payload.old.id));
       })
       .subscribe();
 
@@ -111,7 +119,7 @@ const ChatRoom = ({ user, room, zone, onBack }) => {
         user_avatar: user?.img || '',
         text,
       }])
-      .select('id, room_id, zone, user_name, user_avatar, text, created_at')
+      .select(MESSAGE_COLUMNS)
       .maybeSingle();
 
     setSending(false);
@@ -122,6 +130,28 @@ const ChatRoom = ({ user, room, zone, onBack }) => {
     setNewMessage('');
     setShowEmojis(false);
     setMessages(prev => (prev.some(m => m.id === data.id) ? prev : [...prev, data]));
+  };
+
+  const deleteMessage = async (id) => {
+    setDeleteError(false);
+    setConfirmDeleteId(null);
+    const { data, error } = await supabase
+      .from('messages')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', user.id)
+      .select('id');
+
+    if (error || !Array.isArray(data) || data.length === 0) {
+      setDeleteError(true);
+      return;
+    }
+    setMessages(prev => prev.filter(m => m.id !== id));
+  };
+
+  const handleSignOut = async () => {
+    await signOutUser();
+    onSignOut();
   };
 
   return (
@@ -142,6 +172,9 @@ const ChatRoom = ({ user, room, zone, onBack }) => {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <button onClick={handleSignOut} className="p-2.5 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5" title="Cerrar sesión" aria-label="Cerrar sesión">
+            <LogOut size={18} />
+          </button>
           <button
             onClick={() => setShowRadio(!showRadio)}
             className={`px-3 py-2 rounded-xl transition-all flex items-center gap-2 ${showRadio ? 'bg-blue-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:text-white'}`}
@@ -215,7 +248,7 @@ const ChatRoom = ({ user, room, zone, onBack }) => {
           <p className="text-center text-sm text-zinc-500 py-8">Todavía no hay mensajes. Sé el primero en escribir.</p>
         )}
         {messages.map((msg) => {
-          const isMe = msg.user_name === user?.name;
+          const isMe = msg.user_id === user?.id;
           return (
             <motion.div key={msg.id}
               initial={{ opacity: 0, x: isMe ? 20 : -20 }}
@@ -238,9 +271,23 @@ const ChatRoom = ({ user, room, zone, onBack }) => {
                 }`}>
                   {msg.text}
                 </div>
-                <span className="text-[9px] mt-1 text-zinc-500">
-                  {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </span>
+                <div className="flex items-center gap-3 mt-1">
+                  <span className="text-[9px] text-zinc-500">
+                    {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                  {isMe && confirmDeleteId !== msg.id && (
+                    <button onClick={() => setConfirmDeleteId(msg.id)} aria-label="Borrar mensaje"
+                      className="text-zinc-500 hover:text-red-400 transition-colors">
+                      <Trash2 size={12} />
+                    </button>
+                  )}
+                  {isMe && confirmDeleteId === msg.id && (
+                    <span className="flex items-center gap-2 text-[10px] font-bold">
+                      <button onClick={() => deleteMessage(msg.id)} className="text-red-400 hover:text-red-300">Borrar</button>
+                      <button onClick={() => setConfirmDeleteId(null)} className="text-zinc-400 hover:text-white">Cancelar</button>
+                    </span>
+                  )}
+                </div>
               </div>
             </motion.div>
           );
@@ -262,6 +309,11 @@ const ChatRoom = ({ user, room, zone, onBack }) => {
       </AnimatePresence>
 
       <div className="px-3 sm:px-5 pb-6 sm:pb-8 pt-3 bg-zinc-900 border-t border-zinc-800 shrink-0 w-full">
+        {deleteError && (
+          <p className="text-red-400 text-xs font-bold mb-2 flex items-center gap-1">
+            <AlertCircle size={12} /> No se pudo borrar el mensaje. Inténtalo de nuevo.
+          </p>
+        )}
         {sendError && (
           <p className="text-red-400 text-xs font-bold mb-2 flex items-center gap-1">
             <AlertCircle size={12} /> No se pudo enviar el mensaje. Inténtalo de nuevo.

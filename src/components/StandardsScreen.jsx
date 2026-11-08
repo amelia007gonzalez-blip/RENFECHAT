@@ -80,19 +80,6 @@ const StandardsScreen = ({ onAccept, onCancel }) => {
 
         {/* Footer */}
         <div className="p-8 pt-4 space-y-6">
-          <div className="flex items-center justify-center gap-4">
-            <div className="flex -space-x-2">
-              {['😊', '🤩', '❤️', '🚆'].map((emoji, i) => (
-                <div key={i} className="w-8 h-8 rounded-full bg-zinc-800 border-2 border-zinc-900 flex items-center justify-center text-sm shadow-lg">
-                  {emoji}
-                </div>
-              ))}
-            </div>
-            <button className="text-[11px] font-bold text-blue-400 hover:text-blue-300 transition-colors uppercase tracking-wider">
-              Más iconos
-            </button>
-          </div>
-
           <button 
             onClick={onAccept}
             className="w-full bg-blue-600 hover:bg-blue-500 text-white py-5 rounded-3xl font-bold text-lg shadow-xl shadow-blue-600/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
@@ -104,10 +91,6 @@ const StandardsScreen = ({ onAccept, onCancel }) => {
             <p className="text-[9px] text-zinc-600 font-medium px-4">
               Esta plataforma es independiente. Al continuar, aceptas que el contenido es generado por usuarios y no representa a ninguna entidad oficial.
             </p>
-            <a href="#" className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest hover:text-zinc-400 transition-colors flex items-center justify-center gap-1">
-              Contrato de Licencia
-              <X size={8} />
-            </a>
           </div>
         </div>
       </div>
