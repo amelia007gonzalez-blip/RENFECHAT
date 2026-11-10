@@ -2,16 +2,29 @@ import { useEffect, useState } from 'react';
 import { supabase } from './supabase';
 
 const ERROR_MESSAGES = {
+  invalid_credentials: 'Correo o contraseña incorrectos.',
   'Invalid login credentials': 'Correo o contraseña incorrectos.',
+  user_already_exists: 'Ya existe una cuenta con ese correo.',
   'User already registered': 'Ya existe una cuenta con ese correo.',
+  email_not_confirmed: 'Tu correo todavía no está confirmado.',
   'Email not confirmed': 'Tu correo todavía no está confirmado.',
+  over_email_send_rate_limit: 'Se han enviado demasiados correos. Espera unos minutos e inténtalo de nuevo.',
+  over_request_rate_limit: 'Demasiados intentos seguidos. Espera unos minutos e inténtalo de nuevo.',
+  weak_password: 'La contraseña es demasiado débil. Prueba con una más larga.',
+  email_address_invalid: 'El correo no es válido. Revísalo e inténtalo de nuevo.',
+  signup_disabled: 'El registro de nuevas cuentas está desactivado en este momento.',
 };
 
-const translateError = (error) => ERROR_MESSAGES[error?.message] || 'No se pudo completar la operación. Inténtalo de nuevo.';
+const translateError = (error) => {
+  console.error('Error de autenticación:', error);
+  return ERROR_MESSAGES[error?.code] || ERROR_MESSAGES[error?.message]
+    || 'No se pudo completar la operación. Inténtalo de nuevo en un momento.';
+};
 
 export function useSession() {
   const [session, setSession] = useState(null);
   const [ready, setReady] = useState(false);
+  const [recovering, setRecovering] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -22,9 +35,11 @@ export function useSession() {
       setReady(true);
     });
 
-    const { data: subscription } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const { data: subscription } = supabase.auth.onAuthStateChange((event, nextSession) => {
       setSession(nextSession);
       setReady(true);
+      if (event === 'PASSWORD_RECOVERY') setRecovering(true);
+      if (event === 'USER_UPDATED' || event === 'SIGNED_OUT') setRecovering(false);
     });
 
     return () => {
@@ -33,7 +48,7 @@ export function useSession() {
     };
   }, []);
 
-  return { session, ready };
+  return { session, ready, recovering };
 }
 
 export async function signUpWithAlias({ email, password, alias }) {
@@ -48,6 +63,18 @@ export async function signUpWithAlias({ email, password, alias }) {
 
 export async function signInWithEmail({ email, password }) {
   const { error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) return { error: translateError(error) };
+  return {};
+}
+
+export async function requestPasswordReset(email) {
+  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin });
+  if (error) return { error: translateError(error) };
+  return {};
+}
+
+export async function updatePassword(password) {
+  const { error } = await supabase.auth.updateUser({ password });
   if (error) return { error: translateError(error) };
   return {};
 }

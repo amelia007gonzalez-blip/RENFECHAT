@@ -24,7 +24,7 @@ const VIEWS = {
 
 const App = () => { // State Management with sessionStorage persistence to survive F5 reloads
   const [view, setView] = useState(() => sessionStorage.getItem('trenconnect_view') || VIEWS.LANDING);
-  const { session, ready } = useSession();
+  const { session, ready, recovering } = useSession();
   const sessionUser = session?.user ?? null;
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -54,6 +54,8 @@ const App = () => { // State Management with sessionStorage persistence to survi
   const startChat = () => go(sessionUser ? VIEWS.STANDARDS : VIEWS.AUTH);
 
   // ── Pages that take over the full screen ──
+  if (recovering)
+    return <AuthScreen recovery onAuthenticated={() => go(VIEWS.STANDARDS)} />;
   if (view === VIEWS.AUTH)
     return <AuthScreen onAuthenticated={() => go(VIEWS.STANDARDS)} onBack={() => go(VIEWS.LANDING)} />;
   if (ready && !sessionUser && (view === VIEWS.CHAT || view === VIEWS.SELECTION))
