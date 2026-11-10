@@ -1,39 +1,58 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Train, AlertTriangle, MapPin, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Train, AlertTriangle, MapPin, ExternalLink, RotateCw, AlertCircle } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import { useSupabaseQuery } from '../lib/useSupabaseQuery';
 
-// ─── HORARIOS ────────────────────────────────────────────────────────
+const fetchSchedules = () => supabase
+  .from('train_schedules')
+  .select('id, direction, departs, arrives, from_station, to_station, train_type')
+  .eq('active', true)
+  .order('sort_order', { ascending: true });
 
-const scheduleTGN_BCN = [
-  { from: 'Tarragona', to: 'Barcelona Sants', departs: '05:51', arrives: '07:06', type: 'R13' },
-  { from: 'Tarragona', to: 'Barcelona Sants', departs: '06:21', arrives: '07:36', type: 'R13' },
-  { from: 'Tarragona', to: 'Barcelona Sants', departs: '06:51', arrives: '08:06', type: 'R13' },
-  { from: 'Tarragona', to: 'Barcelona Sants', departs: '07:21', arrives: '08:36', type: 'R13' },
-  { from: 'Tarragona', to: 'Barcelona Sants', departs: '07:51', arrives: '09:06', type: 'R13' },
-  { from: 'Tarragona', to: 'Barcelona Sants', departs: '08:21', arrives: '09:36', type: 'R13' },
-  { from: 'Tarragona', to: 'Barcelona Sants', departs: '09:21', arrives: '10:36', type: 'R13' },
-  { from: 'Tarragona', to: 'Barcelona Sants', departs: '10:21', arrives: '11:36', type: 'R13' },
-];
-const scheduleBCN_TGN = [
-  { from: 'Barcelona Sants', to: 'Tarragona', departs: '06:13', arrives: '07:28', type: 'R13' },
-  { from: 'Barcelona Sants', to: 'Tarragona', departs: '07:13', arrives: '08:28', type: 'R13' },
-  { from: 'Barcelona Sants', to: 'Tarragona', departs: '08:13', arrives: '09:28', type: 'R13' },
-  { from: 'Barcelona Sants', to: 'Tarragona', departs: '09:13', arrives: '10:28', type: 'R13' },
-  { from: 'Barcelona Sants', to: 'Tarragona', departs: '10:13', arrives: '11:28', type: 'R13' },
-  { from: 'Barcelona Sants', to: 'Tarragona', departs: '17:13', arrives: '18:28', type: 'R13' },
-  { from: 'Barcelona Sants', to: 'Tarragona', departs: '18:13', arrives: '19:28', type: 'R13' },
-  { from: 'Barcelona Sants', to: 'Tarragona', departs: '19:13', arrives: '20:28', type: 'R13' },
-];
+const fetchStations = () => supabase
+  .from('stations')
+  .select('id, name, zone, lines, services')
+  .eq('active', true)
+  .order('sort_order', { ascending: true });
+
+const trimTime = (time) => time.slice(0, 5);
+
+const minutesBetween = (from, to) => {
+  const toMinutes = (time) => {
+    const [h, m] = trimTime(time).split(':').map(Number);
+    return h * 60 + m;
+  };
+  const diff = toMinutes(to) - toMinutes(from);
+  return diff < 0 ? diff + 1440 : diff;
+};
+
+const StatusMessage = ({ loading, error, empty, emptyText, onRetry }) => {
+  if (loading) return <p className="text-center text-xs text-zinc-500 font-bold uppercase tracking-widest py-8">Cargando...</p>;
+  if (error) return (
+    <div className="flex flex-col items-center gap-3 py-8 text-center">
+      <AlertCircle className="text-red-400" size={28} />
+      <p className="text-sm text-zinc-400">No se pudo cargar la información.</p>
+      <button onClick={onRetry} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-800 text-white text-xs font-bold hover:bg-zinc-700">
+        <RotateCw size={14} /> Reintentar
+      </button>
+    </div>
+  );
+  if (empty) return <p className="text-center text-sm text-zinc-500 py-8">{emptyText}</p>;
+  return null;
+};
 
 export function HorariosPage({ onBack }) {
-  const [dir, setDir] = React.useState('tgn-bcn');
-  const schedule = dir === 'tgn-bcn' ? scheduleTGN_BCN : scheduleBCN_TGN;
+  const [dir, setDir] = useState('tgn-bcn');
+  const fetcher = useCallback(fetchSchedules, []);
+  const { data, error, loading, retry } = useSupabaseQuery(fetcher);
+  const schedule = (data || []).filter(s => s.direction === dir);
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-zinc-950 pt-28 sm:pt-36 pb-20">
       <div className="container mx-auto px-4 sm:px-6 max-w-3xl">
         <div className="flex items-center gap-3 mb-8">
-          <button onClick={onBack} className="p-2 hover:bg-white/5 rounded-xl text-zinc-400"><ArrowLeft size={20} /></button>
+          <button onClick={onBack} className="p-2 hover:bg-white/5 rounded-xl text-zinc-400" aria-label="Volver"><ArrowLeft size={20} /></button>
           <div>
             <h1 className="text-3xl font-outfit font-black">Horarios <span className="text-renfe-red">Aproximados</span></h1>
             <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mt-1">Laborables · Basados en horario habitual</p>
@@ -50,26 +69,28 @@ export function HorariosPage({ onBack }) {
         </div>
 
         <div className="space-y-3">
-          {schedule.map((s, i) => (
-            <div key={i} className="bg-zinc-900 border border-zinc-800 rounded-2xl px-5 py-4 flex items-center justify-between">
+          <StatusMessage loading={loading} error={error} onRetry={retry}
+            empty={!loading && !error && schedule.length === 0} emptyText="No hay horarios disponibles para este trayecto." />
+          {!loading && !error && schedule.map((s) => (
+            <div key={s.id} className="bg-zinc-900 border border-zinc-800 rounded-2xl px-5 py-4 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="text-center">
-                  <div className="text-xl font-black text-white">{s.departs}</div>
-                  <div className="text-[10px] text-zinc-500 font-bold">{s.from.includes('Barcelona') ? 'Sants' : 'Tarragona'}</div>
+                  <div className="text-xl font-black text-white">{trimTime(s.departs)}</div>
+                  <div className="text-[10px] text-zinc-500 font-bold">{s.from_station}</div>
                 </div>
                 <div className="flex flex-col items-center gap-1 px-2">
                   <div className="w-16 h-px bg-zinc-700 relative flex items-center justify-center">
                     <Train size={12} className="text-renfe-red bg-zinc-900 px-1" />
                   </div>
-                  <span className="text-[9px] text-zinc-600 font-bold">{s.type}</span>
+                  <span className="text-[9px] text-zinc-600 font-bold">{s.train_type}</span>
                 </div>
                 <div className="text-center">
-                  <div className="text-xl font-black text-white">{s.arrives}</div>
-                  <div className="text-[10px] text-zinc-500 font-bold">{s.to.includes('Barcelona') ? 'Sants' : 'Tarragona'}</div>
+                  <div className="text-xl font-black text-white">{trimTime(s.arrives)}</div>
+                  <div className="text-[10px] text-zinc-500 font-bold">{s.to_station}</div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] text-zinc-500 font-bold">~75 min</span>
+                <span className="text-[10px] text-zinc-500 font-bold">~{minutesBetween(s.departs, s.arrives)} min</span>
               </div>
             </div>
           ))}
@@ -86,26 +107,15 @@ export function HorariosPage({ onBack }) {
   );
 }
 
-// ─── ESTACIONES ──────────────────────────────────────────────────────
-
-const stations_data = [
-  { name: 'Tarragona', lines: ['R13', 'R14', 'R16', 'RT1', 'RT2'], zone: 'C-6', services: ['Consigna', 'WiFi', 'Bar'] },
-  { name: 'Camp de Tarragona (AVE)', lines: ['AVE', 'LD'], zone: 'AVE', services: ['Parking', 'WiFi', 'Bar', 'Taxi'] },
-  { name: 'Reus', lines: ['R14', 'RT1'], zone: 'C-6', services: ['WiFi', 'Bar'] },
-  { name: 'Salou', lines: ['R14', 'RT2'], zone: 'C-6', services: ['WiFi'] },
-  { name: 'Cambrils', lines: ['R14'], zone: 'C-6', services: ['Bar'] },
-  { name: 'L\'Hospitalet de l\'Infant', lines: ['R16'], zone: 'C-6', services: [] },
-  { name: 'Vandellòs', lines: ['R16'], zone: 'C-6', services: [] },
-  { name: 'Tortosa', lines: ['R16'], zone: 'C-6', services: ['Bar'] },
-  { name: 'L\'Arboç', lines: ['RT2'], zone: 'C-6', services: [] },
-];
-
 export function EstacionesPage({ onBack }) {
+  const fetcher = useCallback(fetchStations, []);
+  const { data, error, loading, retry } = useSupabaseQuery(fetcher);
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-zinc-950 pt-28 sm:pt-36 pb-20">
       <div className="container mx-auto px-4 sm:px-6 max-w-3xl">
         <div className="flex items-center gap-3 mb-8">
-          <button onClick={onBack} className="p-2 hover:bg-white/5 rounded-xl text-zinc-400"><ArrowLeft size={20} /></button>
+          <button onClick={onBack} className="p-2 hover:bg-white/5 rounded-xl text-zinc-400" aria-label="Volver"><ArrowLeft size={20} /></button>
           <div>
             <h1 className="text-3xl font-outfit font-black">Estaciones <span className="text-tarragona-gold">Tarragona</span></h1>
             <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mt-1">Red de cercanías y regionales</p>
@@ -113,8 +123,10 @@ export function EstacionesPage({ onBack }) {
         </div>
 
         <div className="space-y-3">
-          {stations_data.map((st, i) => (
-            <div key={i} className="bg-zinc-900 border border-zinc-800 rounded-2xl px-5 py-4">
+          <StatusMessage loading={loading} error={error} onRetry={retry}
+            empty={!loading && !error && (data || []).length === 0} emptyText="No hay estaciones disponibles ahora mismo." />
+          {!loading && !error && (data || []).map((st) => (
+            <div key={st.id} className="bg-zinc-900 border border-zinc-800 rounded-2xl px-5 py-4">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
                   <div className="p-2.5 bg-zinc-800 rounded-xl"><MapPin size={16} className="text-tarragona-gold" /></div>

@@ -71,8 +71,8 @@ const StandardsScreen = ({ onAccept, onCancel }) => {
             <Info className="text-orange-400 shrink-0" size={20} />
             <div>
               <h4 className="text-[10px] font-black text-orange-400 uppercase tracking-widest mb-1">Descargo de Responsabilidad</h4>
-              <p className="text-[11px] text-zinc-500 italic leading-snug">
-                "No somos responsables de lo que suceda fuera de esta red digital. Los reportes..."
+              <p className="text-[11px] text-zinc-400 leading-snug">
+                TrenConnect TGN es un chat comunitario libre e independiente de Renfe. Las interacciones, el intercambio de imágenes y los posibles encuentros presenciales entre pasajeros corren bajo la estricta responsabilidad de cada usuario. La aplicación no se hace responsable de conductas individuales ni de encuentros fuera del entorno digital.
               </p>
             </div>
           </div>
