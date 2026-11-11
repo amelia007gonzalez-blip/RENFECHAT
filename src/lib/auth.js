@@ -13,6 +13,8 @@ const ERROR_MESSAGES = {
   weak_password: 'La contraseña es demasiado débil. Prueba con una más larga.',
   email_address_invalid: 'El correo no es válido. Revísalo e inténtalo de nuevo.',
   signup_disabled: 'El registro de nuevas cuentas está desactivado en este momento.',
+  'Failed to fetch': 'No se pudo conectar con el servidor. Revisa tu conexión a internet o que las variables de entorno de Supabase estén bien configuradas en Vercel.',
+  'fetch failed': 'No se pudo conectar con el servidor. Revisa tu conexión a internet o que las variables de entorno de Supabase estén bien configuradas en Vercel.',
 };
 
 const translateError = (error) => {
@@ -54,19 +56,27 @@ export function useSession() {
 }
 
 export async function signUpWithAlias({ email, password, alias }) {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: { data: { alias } },
-  });
-  if (error) return { error: translateError(error) };
-  return { needsConfirmation: !data.session };
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { alias } },
+    });
+    if (error) return { error: translateError(error) };
+    return { needsConfirmation: !data.session };
+  } catch (e) {
+    return { error: translateError(e) };
+  }
 }
 
 export async function signInWithEmail({ email, password }) {
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) return { error: translateError(error) };
-  return {};
+  try {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return { error: translateError(error) };
+    return {};
+  } catch (e) {
+    return { error: translateError(e) };
+  }
 }
 
 export async function requestPasswordReset(email) {

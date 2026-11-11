@@ -4,6 +4,8 @@ import { ArrowLeft, AlertCircle, Train } from 'lucide-react';
 import { signInWithEmail, signUpWithAlias, requestPasswordReset, updatePassword } from '../lib/auth';
 import PasswordInput from './PasswordInput';
 
+const SUPABASE_CONFIGURED = Boolean(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY);
+
 const MIN_PASSWORD_LENGTH = 6;
 const fieldClass = 'w-full bg-zinc-950 border border-zinc-800 p-4 rounded-2xl text-white outline-none focus:ring-2 focus:ring-blue-500/50 font-medium text-sm';
 const labelClass = 'text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2 block';
@@ -58,6 +60,12 @@ const AuthScreen = ({ onAuthenticated, onBack, recovery = false }) => {
     }
 
     setSubmitting(true);
+
+    if (!SUPABASE_CONFIGURED) {
+      setSubmitting(false);
+      setError('Error de configuración: faltan las variables de entorno de Supabase en Vercel. Ve a Settings → Environment Variables y añade VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY, luego redeploya.');
+      return;
+    }
 
     if (mode === 'forgot') {
       const result = await requestPasswordReset(trimmedEmail);
