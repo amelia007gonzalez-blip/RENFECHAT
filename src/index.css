@@ -3,11 +3,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
 
 @theme {
-  --color-renfe-red: #E2001A;
-  --color-renfe-dark: #1D1D1B;
-  --color-renfe-gray: #F0F0F0;
-  --color-tarragona-gold: #FFAE00;
-  --color-tarragona-blue: #2B3B60;
+  --color-vagon-red: #E2001A;
+  --color-vagon-dark: #1D1D1B;
+  --color-vagon-gray: #F0F0F0;
+  --color-vagon-gold: #FFAE00;
+  --color-vagon-blue: #2B3B60;
 
   --font-outfit: 'Outfit', sans-serif;
   --font-inter: 'Inter', sans-serif;

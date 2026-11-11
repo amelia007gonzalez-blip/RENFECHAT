@@ -29,7 +29,7 @@ const StandardsScreen = ({ onAccept, onCancel }) => {
                 Escudo de<br />Convivencia y Respeto
               </h2>
               <p className="text-[10px] text-zinc-500 font-bold tracking-widest uppercase mt-1">
-                Protocolo Renfe Connect V2.4.0
+                Protocolo Vagón Abierto V2.4.0
               </p>
             </div>
           </div>
@@ -72,7 +72,7 @@ const StandardsScreen = ({ onAccept, onCancel }) => {
             <div>
               <h4 className="text-[10px] font-black text-orange-400 uppercase tracking-widest mb-1">Descargo de Responsabilidad</h4>
               <p className="text-[11px] text-zinc-400 leading-snug">
-                TrenConnect TGN es un chat comunitario libre e independiente de Renfe. Las interacciones, el intercambio de imágenes y los posibles encuentros presenciales entre pasajeros corren bajo la estricta responsabilidad de cada usuario. La aplicación no se hace responsable de conductas individuales ni de encuentros fuera del entorno digital.
+                Vagón Abierto es un chat comunitario libre e independiente de cualquier operador ferroviario. Las interacciones, el intercambio de imágenes y los posibles encuentros presenciales entre pasajeros corren bajo la estricta responsabilidad de cada usuario. La aplicación no se hace responsable de conductas individuales ni de encuentros fuera del entorno digital.
               </p>
             </div>
           </div>

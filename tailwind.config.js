@@ -6,12 +6,10 @@ export default {
   theme: {
     extend: {
       colors: {
-        renfe: {
+        vagon: {
           red: '#E2001A',
           dark: '#1D1D1B',
           gray: '#F0F0F0',
-        },
-        tarragona: {
           gold: '#FFAE00',
           blue: '#2B3B60',
         }

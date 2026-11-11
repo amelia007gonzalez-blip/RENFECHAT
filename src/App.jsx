@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Train, MapPin, Users, Clock, ChevronRight, MessageSquare, Menu, X, Bell, Radio } from 'lucide-react';
+import { Train, MapPin, Users, Clock, ChevronRight, MessageSquare, Menu, X, Bell, Radio, Coffee } from 'lucide-react';
 import { Analytics } from '@vercel/analytics/react';
 
 import StandardsScreen from './components/StandardsScreen';
@@ -22,27 +22,26 @@ const VIEWS = {
   ESTACIONES: 'ESTACIONES',
 };
 
-const App = () => { // State Management with sessionStorage persistence to survive F5 reloads
-  const [view, setView] = useState(() => sessionStorage.getItem('trenconnect_view') || VIEWS.LANDING);
+const App = () => {
+  const [view, setView] = useState(() => sessionStorage.getItem('vagon_view') || VIEWS.LANDING);
   const { session, ready, recovering } = useSession();
   const sessionUser = session?.user ?? null;
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [userProfile, setUserProfile] = useState(() => {
-    const saved = sessionStorage.getItem('trenconnect_user');
+    const saved = sessionStorage.getItem('vagon_user');
     return saved && saved !== "undefined" ? JSON.parse(saved) : null;
   });
   const [selectedRoom, setSelectedRoom] = useState(() => {
-    const saved = sessionStorage.getItem('trenconnect_room');
+    const saved = sessionStorage.getItem('vagon_room');
     return saved && saved !== "undefined" ? JSON.parse(saved) : null;
   });
-  const [zone, setZone] = useState(() => sessionStorage.getItem('trenconnect_zone') || null);
+  const [zone, setZone] = useState(() => sessionStorage.getItem('vagon_zone') || null);
 
-  // Sync state to sessionStorage
-  useEffect(() => { sessionStorage.setItem('trenconnect_view', view); }, [view]);
-  useEffect(() => { sessionStorage.setItem('trenconnect_room', JSON.stringify(selectedRoom)); }, [selectedRoom]);
-  useEffect(() => { sessionStorage.setItem('trenconnect_user', JSON.stringify(userProfile)); }, [userProfile]);
-  useEffect(() => { if (zone) sessionStorage.setItem('trenconnect_zone', zone); }, [zone]);
+  useEffect(() => { sessionStorage.setItem('vagon_view', view); }, [view]);
+  useEffect(() => { sessionStorage.setItem('vagon_room', JSON.stringify(selectedRoom)); }, [selectedRoom]);
+  useEffect(() => { sessionStorage.setItem('vagon_user', JSON.stringify(userProfile)); }, [userProfile]);
+  useEffect(() => { if (zone) sessionStorage.setItem('vagon_zone', zone); }, [zone]);
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 50);
@@ -53,7 +52,6 @@ const App = () => { // State Management with sessionStorage persistence to survi
   const go = (v) => { setView(v); setMenuOpen(false); window.scrollTo({ top: 0 }); };
   const startChat = () => go(sessionUser ? VIEWS.STANDARDS : VIEWS.AUTH);
 
-  // ── Pages that take over the full screen ──
   if (recovering)
     return <AuthScreen recovery onAuthenticated={() => go(VIEWS.STANDARDS)} />;
   if (view === VIEWS.AUTH)
@@ -82,8 +80,8 @@ const App = () => { // State Management with sessionStorage persistence to survi
 
       {/* ── Disclaimer bar ── */}
       <div className="fixed top-0 w-full bg-orange-500/10 backdrop-blur-md border-b border-orange-500/20 py-2 text-center text-[9px] sm:text-xs font-semibold text-orange-200/80 z-[110]">
-        ⚠️ <span className="uppercase tracking-widest px-1">Aviso:</span> App para entretenimiento.{' '}
-        <span className="hidden sm:inline">No tiene vinculación oficial con Renfe.</span>
+        ⚠️ <span className="uppercase tracking-widest px-1">Aviso:</span> Chat comunitario independiente.{' '}
+        <span className="hidden sm:inline">Sin vinculación con operadores ferroviarios.</span>
       </div>
 
       {/* ── Standards modal ── */}
@@ -98,12 +96,12 @@ const App = () => { // State Management with sessionStorage persistence to survi
         <div className="container mx-auto px-6 flex justify-between items-center">
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
             className="flex items-center gap-2 cursor-pointer z-50" onClick={() => go(VIEWS.LANDING)}>
-            <div className="bg-renfe-red p-1.5 rounded-lg"><Train className="text-white" size={22} /></div>
+            <div className="bg-vagon-red p-1.5 rounded-lg"><Train className="text-white" size={22} /></div>
             <div className="flex flex-col">
               <span className="text-base sm:text-lg font-outfit font-black tracking-tight leading-none">
-                Tren<span className="text-renfe-red">Connect</span> <span className="text-tarragona-gold">TGN</span>
+                Vagón <span className="text-vagon-red">Abierto</span>
               </span>
-              <span className="text-[8px] uppercase tracking-[0.2em] text-zinc-600 font-bold">App no oficial</span>
+              <span className="text-[8px] uppercase tracking-[0.2em] text-zinc-600 font-bold">Chat de viajeros · Tarragona</span>
             </div>
           </motion.div>
 
@@ -116,7 +114,7 @@ const App = () => { // State Management with sessionStorage persistence to survi
               </button>
             ))}
             <button onClick={startChat}
-              className="bg-renfe-red hover:bg-red-700 text-white px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-lg shadow-renfe-red/20">
+              className="bg-vagon-red hover:bg-red-700 text-white px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-lg shadow-vagon-red/20">
               Acceder
             </button>
           </div>
@@ -140,7 +138,7 @@ const App = () => { // State Management with sessionStorage persistence to survi
                   </button>
                 ))}
                 <button onClick={startChat}
-                  className="w-full bg-renfe-red text-white py-5 rounded-[2rem] font-black uppercase tracking-[0.2em]">
+                  className="w-full bg-vagon-red text-white py-5 rounded-[2rem] font-black uppercase tracking-[0.2em]">
                   Acceder al Chat
                 </button>
               </div>
@@ -155,7 +153,7 @@ const App = () => { // State Management with sessionStorage persistence to survi
           <div className="pt-24 sm:pt-32">
             {/* Hero */}
             <section className="relative pt-16 sm:pt-32 pb-20 overflow-hidden">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-gradient-to-b from-renfe-red/10 to-transparent pointer-events-none" />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-gradient-to-b from-vagon-red/10 to-transparent pointer-events-none" />
               <div className="container mx-auto px-6 relative z-10 text-center">
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
                   <span className="inline-block py-1 px-4 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 text-[10px] font-black uppercase tracking-widest mb-8">
@@ -163,7 +161,7 @@ const App = () => { // State Management with sessionStorage persistence to survi
                   </span>
                   <h1 className="text-5xl md:text-8xl font-outfit font-extrabold mb-8 leading-[1.1] tracking-tighter">
                     Conecta con tu{' '}
-                    <span className="text-transparent bg-clip-text bg-gradient-to-br from-renfe-red via-orange-500 to-tarragona-gold">Tren</span>
+                    <span className="text-transparent bg-clip-text bg-gradient-to-br from-vagon-red via-orange-500 to-vagon-gold">tren</span>
                     <br />en tiempo real.
                   </h1>
                   <p className="text-zinc-500 text-lg md:text-xl max-w-2xl mx-auto mb-12">
@@ -171,7 +169,7 @@ const App = () => { // State Management with sessionStorage persistence to survi
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <button onClick={startChat}
-                      className="w-full sm:w-auto bg-renfe-red text-white px-10 py-5 rounded-[2rem] font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-red-700 transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-renfe-red/30">
+                      className="w-full sm:w-auto bg-vagon-red text-white px-10 py-5 rounded-[2rem] font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-red-700 transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-vagon-red/30">
                       Empezar ahora <ChevronRight size={20} />
                     </button>
                     <button onClick={() => go(VIEWS.INCIDENCIAS)}
@@ -198,7 +196,7 @@ const App = () => { // State Management with sessionStorage persistence to survi
                       c.color === 'blue' ? 'bg-blue-500/20 text-blue-400' :
                       c.color === 'orange' ? 'bg-orange-500/20 text-orange-400' :
                       c.color === 'green' ? 'bg-green-500/20 text-green-400' :
-                      'bg-red-500/20 text-renfe-red'
+                      'bg-red-500/20 text-vagon-red'
                     }`}>{c.icon}</div>
                     <h3 className="font-black text-lg mb-1">{c.label}</h3>
                     <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest">{c.sub}</p>
@@ -210,7 +208,10 @@ const App = () => { // State Management with sessionStorage persistence to survi
             {/* Community CTA */}
             <section className="py-16 container mx-auto px-6">
               <div className="bg-zinc-900/50 border border-zinc-800 p-10 sm:p-16 rounded-[3rem] text-center max-w-4xl mx-auto">
-                <MessageSquare className="text-renfe-red mx-auto mb-6" size={44} />
+                <div className="flex items-center justify-center gap-3 mb-6">
+                  <Coffee className="text-vagon-gold" size={40} />
+                  <MessageSquare className="text-vagon-red" size={44} />
+                </div>
                 <h2 className="text-3xl sm:text-5xl font-outfit font-bold mb-6">La esencia es el Chat</h2>
                 <p className="text-zinc-500 text-lg mb-10">
                   Lugar de encuentro para los que cogemos el tren a diario. ¡Nos vemos en el vagón!
@@ -234,10 +235,10 @@ const App = () => { // State Management with sessionStorage persistence to survi
         <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6 text-zinc-600">
           <div className="flex items-center gap-3 opacity-40">
             <Train size={20} />
-            <span className="font-outfit font-bold text-lg uppercase tracking-widest">TrenConnect TGN</span>
+            <span className="font-outfit font-bold text-lg uppercase tracking-widest">Vagón Abierto</span>
           </div>
           <p className="text-[10px] font-bold uppercase tracking-widest text-center">
-            © 2026 TrenConnect Tarragona · <span className="text-renfe-red">App no oficial v1.2</span>
+            © 2026 Vagón Abierto · Tarragona · <span className="text-vagon-red">Chat comunitario v2.0</span>
           </p>
           <div className="flex gap-5">
             <button onClick={() => go(VIEWS.HORARIOS)} className="hover:text-white transition-colors text-xs font-bold uppercase tracking-widest">Horarios</button>

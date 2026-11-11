@@ -100,7 +100,7 @@ const ChatRoom = ({ user, room, zone, onBack, onSignOut }) => {
   }, [messages]);
 
   useEffect(() => {
-    const presenceChannel = supabase.channel('renfe_presence');
+    const presenceChannel = supabase.channel('vagon_presence');
     presenceChannel.subscribe(async (status) => {
       if (status === 'SUBSCRIBED') {
         await presenceChannel.track({ room_id: room.id, user: user?.name });
@@ -219,7 +219,7 @@ const ChatRoom = ({ user, room, zone, onBack, onSignOut }) => {
             <ArrowLeft size={20} />
           </button>
           <div className="flex items-center gap-3">
-            <div className="bg-renfe-red/20 p-2 rounded-xl"><Train className="text-renfe-red" size={18} /></div>
+            <div className="bg-vagon-red/20 p-2 rounded-xl"><Train className="text-vagon-red" size={18} /></div>
             <div>
               <h3 className="font-bold text-sm leading-none mb-0.5">{room?.name || 'Chat'}</h3>
               <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">{zone}</span>

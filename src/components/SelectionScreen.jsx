@@ -80,7 +80,7 @@ const SelectionScreen = ({ sessionUser, onSelect }) => {
   const [onlineCounts, setOnlineCounts] = useState({});
 
   useEffect(() => {
-    const presenceChannel = supabase.channel('renfe_presence');
+    const presenceChannel = supabase.channel('vagon_presence');
     presenceChannel
       .on('presence', { event: 'sync' }, () => {
         const state = presenceChannel.presenceState();
@@ -131,7 +131,7 @@ const SelectionScreen = ({ sessionUser, onSelect }) => {
         <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} className="space-y-5">
           <div>
             <h2 className="text-4xl sm:text-5xl font-outfit font-black tracking-tighter leading-none">
-              Tu <span className="text-renfe-red">Avatar</span>
+              Tu <span className="text-vagon-red">Avatar</span>
             </h2>
             <p className="text-zinc-600 font-bold uppercase tracking-widest text-[9px] mt-2">Elige y personaliza tu aspecto</p>
           </div>
@@ -150,7 +150,7 @@ const SelectionScreen = ({ sessionUser, onSelect }) => {
               <button
                 onClick={randomize}
                 title="Aleatorio"
-                className="absolute -bottom-3 -right-3 bg-renfe-red p-3 rounded-2xl text-white shadow-xl hover:rotate-180 transition-all duration-500 active:scale-90"
+                className="absolute -bottom-3 -right-3 bg-vagon-red p-3 rounded-2xl text-white shadow-xl hover:rotate-180 transition-all duration-500 active:scale-90"
               >
                 <RotateCcw size={16} />
               </button>
@@ -255,7 +255,7 @@ const SelectionScreen = ({ sessionUser, onSelect }) => {
         {/* ── RIGHT: Room Selection ── */}
         <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} className="space-y-5">
           <div>
-            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-renfe-red mb-1">Selecciona tu Ruta</h3>
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-vagon-red mb-1">Selecciona tu Ruta</h3>
             <p className="text-zinc-500 text-sm">Únete al chat de los que viajan contigo ahora mismo.</p>
           </div>
 
@@ -295,7 +295,7 @@ const SelectionScreen = ({ sessionUser, onSelect }) => {
           </div>
 
           <button onClick={handleEnterChat}
-            className="w-full bg-renfe-red hover:bg-red-700 text-white py-5 rounded-[2rem] font-black text-lg shadow-xl shadow-renfe-red/25 transition-all flex items-center justify-center gap-3 group active:scale-95 mt-2"
+            className="w-full bg-vagon-red hover:bg-red-700 text-white py-5 rounded-[2rem] font-black text-lg shadow-xl shadow-vagon-red/25 transition-all flex items-center justify-center gap-3 group active:scale-95 mt-2"
           >
             Entrar al Chat
             <ChevronRight size={22} className="group-hover:translate-x-1 transition-transform" />

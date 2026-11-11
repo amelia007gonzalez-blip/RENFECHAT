@@ -1,4 +1,5 @@
 export const CHAT_ROUTES = [
+  { id: 'CAFETERIA', name: '☕ Vagón Cafetería — Café Virtual', desc: 'Sala general de toda la comunidad' },
   { id: 'TGN-BCN', name: 'Tarragona → Barcelona', desc: 'Línea de alta frecuencia (Diarios)' },
   { id: 'BCN-TGN', name: 'Barcelona → Tarragona', desc: 'Regreso desde Sants / Passeig de Gràcia' },
   { id: 'R16', name: 'Línea R16', desc: 'Tortosa / Ulldecona' },

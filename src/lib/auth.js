@@ -17,8 +17,10 @@ const ERROR_MESSAGES = {
 
 const translateError = (error) => {
   console.error('Error de autenticación:', error);
-  return ERROR_MESSAGES[error?.code] || ERROR_MESSAGES[error?.message]
-    || 'No se pudo completar la operación. Inténtalo de nuevo en un momento.';
+  const known = ERROR_MESSAGES[error?.code] || ERROR_MESSAGES[error?.message];
+  if (known) return known;
+  const raw = error?.message || error?.toString?.() || '';
+  return raw || 'No se pudo completar la operación. Inténtalo de nuevo en un momento.';
 };
 
 export function useSession() {

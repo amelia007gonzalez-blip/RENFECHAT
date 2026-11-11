@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Train, AlertTriangle, MapPin, ExternalLink, RotateCw, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Train, AlertTriangle, MapPin, RotateCw, AlertCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useSupabaseQuery } from '../lib/useSupabaseQuery';
 
@@ -54,7 +54,7 @@ export function HorariosPage({ onBack }) {
         <div className="flex items-center gap-3 mb-8">
           <button onClick={onBack} className="p-2 hover:bg-white/5 rounded-xl text-zinc-400" aria-label="Volver"><ArrowLeft size={20} /></button>
           <div>
-            <h1 className="text-3xl font-outfit font-black">Horarios <span className="text-renfe-red">Aproximados</span></h1>
+            <h1 className="text-3xl font-outfit font-black">Horarios <span className="text-vagon-red">Aproximados</span></h1>
             <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mt-1">Laborables · Basados en horario habitual</p>
           </div>
         </div>
@@ -62,7 +62,7 @@ export function HorariosPage({ onBack }) {
         <div className="flex gap-3 mb-8">
           {[{ id: 'tgn-bcn', label: 'TGN → BCN' }, { id: 'bcn-tgn', label: 'BCN → TGN' }].map(d => (
             <button key={d.id} onClick={() => setDir(d.id)}
-              className={`px-5 py-2.5 rounded-full font-bold text-sm transition-all ${dir === d.id ? 'bg-renfe-red text-white' : 'bg-zinc-900 text-zinc-400 border border-zinc-800 hover:bg-zinc-800'}`}>
+              className={`px-5 py-2.5 rounded-full font-bold text-sm transition-all ${dir === d.id ? 'bg-vagon-red text-white' : 'bg-zinc-900 text-zinc-400 border border-zinc-800 hover:bg-zinc-800'}`}>
               {d.label}
             </button>
           ))}
@@ -80,7 +80,7 @@ export function HorariosPage({ onBack }) {
                 </div>
                 <div className="flex flex-col items-center gap-1 px-2">
                   <div className="w-16 h-px bg-zinc-700 relative flex items-center justify-center">
-                    <Train size={12} className="text-renfe-red bg-zinc-900 px-1" />
+                    <Train size={12} className="text-vagon-red bg-zinc-900 px-1" />
                   </div>
                   <span className="text-[9px] text-zinc-600 font-bold">{s.train_type}</span>
                 </div>
@@ -99,7 +99,7 @@ export function HorariosPage({ onBack }) {
         <div className="mt-8 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-5 flex items-start gap-3">
           <AlertTriangle size={16} className="text-orange-400 shrink-0 mt-0.5" />
           <p className="text-xs text-zinc-400 leading-relaxed">
-            Horarios orientativos. Consulta <a href="https://www.renfe.com/es/es/cercanias/cercanias-barcelona/horarios" target="_blank" rel="noopener noreferrer" className="text-blue-400 underline font-bold">renfe.com <ExternalLink size={10} className="inline" /></a> para horarios oficiales actualizados.
+            Horarios orientativos. Consulta fuentes oficiales para horarios actualizados.
           </p>
         </div>
       </div>
@@ -117,7 +117,7 @@ export function EstacionesPage({ onBack }) {
         <div className="flex items-center gap-3 mb-8">
           <button onClick={onBack} className="p-2 hover:bg-white/5 rounded-xl text-zinc-400" aria-label="Volver"><ArrowLeft size={20} /></button>
           <div>
-            <h1 className="text-3xl font-outfit font-black">Estaciones <span className="text-tarragona-gold">Tarragona</span></h1>
+            <h1 className="text-3xl font-outfit font-black">Estaciones <span className="text-vagon-gold">Tarragona</span></h1>
             <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mt-1">Red de cercanías y regionales</p>
           </div>
         </div>
@@ -129,7 +129,7 @@ export function EstacionesPage({ onBack }) {
             <div key={st.id} className="bg-zinc-900 border border-zinc-800 rounded-2xl px-5 py-4">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 bg-zinc-800 rounded-xl"><MapPin size={16} className="text-tarragona-gold" /></div>
+                  <div className="p-2.5 bg-zinc-800 rounded-xl"><MapPin size={16} className="text-vagon-gold" /></div>
                   <div>
                     <h3 className="font-bold text-white text-sm">{st.name}</h3>
                     <span className="text-[10px] text-zinc-500 font-bold">Zona {st.zone}</span>
@@ -138,7 +138,7 @@ export function EstacionesPage({ onBack }) {
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {st.lines.map(l => (
-                  <span key={l} className="text-[10px] font-black bg-renfe-red/10 text-renfe-red border border-renfe-red/20 px-2 py-0.5 rounded-full uppercase tracking-wider">{l}</span>
+                  <span key={l} className="text-[10px] font-black bg-vagon-red/10 text-vagon-red border border-vagon-red/20 px-2 py-0.5 rounded-full uppercase tracking-wider">{l}</span>
                 ))}
                 {st.services.map(s => (
                   <span key={s} className="text-[10px] font-bold bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded-full">{s}</span>

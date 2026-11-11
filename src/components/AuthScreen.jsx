@@ -116,7 +116,7 @@ const AuthScreen = ({ onAuthenticated, onBack, recovery = false }) => {
 
         <div className="bg-zinc-900/60 border border-zinc-800 rounded-[2.5rem] p-8 space-y-6">
           <div className="flex items-center gap-3">
-            <div className="bg-renfe-red/20 p-2.5 rounded-xl"><Train className="text-renfe-red" size={20} /></div>
+            <div className="bg-vagon-red/20 p-2.5 rounded-xl"><Train className="text-vagon-red" size={20} /></div>
             <div>
               <h1 className="text-2xl font-outfit font-black">{TITLES[mode]}</h1>
               <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mt-1">Solo viajeros registrados</p>
@@ -160,7 +160,7 @@ const AuthScreen = ({ onAuthenticated, onBack, recovery = false }) => {
             {notice && <p className="text-green-400 text-xs font-bold">{notice}</p>}
 
             <button type="submit" disabled={submitting}
-              className="w-full bg-renfe-red hover:bg-red-700 disabled:opacity-50 text-white py-4 rounded-2xl font-black uppercase tracking-widest transition-all active:scale-95">
+              className="w-full bg-vagon-red hover:bg-red-700 disabled:opacity-50 text-white py-4 rounded-2xl font-black uppercase tracking-widest transition-all active:scale-95">
               {submitting ? 'Un momento...' : SUBMIT_LABELS[mode]}
             </button>
           </form>
