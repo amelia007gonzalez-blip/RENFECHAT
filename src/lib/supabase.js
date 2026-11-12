@@ -12,6 +12,6 @@ if (!supabaseAnonKey || supabaseAnonKey === 'undefined') {
 }
 
 export const supabase = createClient(
-  (supabaseUrl && supabaseUrl !== 'undefined') ? supabaseUrl : 'https://xfypjsvpicmlrolwupvz.supabase.co',
+  (supabaseUrl && supabaseUrl !== 'undefined') ? supabaseUrl : 'https://xfypjsvpiclmrolwupvz.supabase.co',
   (supabaseAnonKey && supabaseAnonKey !== 'undefined') ? supabaseAnonKey : ''
 );
